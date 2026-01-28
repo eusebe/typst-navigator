@@ -1,0 +1,8 @@
+[package]
+name = "navigator"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["David Hajage", "pacaunt"]
+license = "MIT"
+description = "Agnostic navigation tools for Typst presentations (Miniframes, Progressive Outline, Transitions)."
+categories = ["presentation", "layout"]
