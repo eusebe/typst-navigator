@@ -2,7 +2,10 @@
 name = "navigator"
 version = "0.1.0"
 entrypoint = "lib.typ"
-authors = ["David Hajage", "pacaunt"]
+authors = ["David Hajage <dhajage@gmail.com>"]
+description = "Navigation tools for Typst presentations."
 license = "MIT"
-description = "Agnostic navigation tools for Typst presentations (Miniframes, Progressive Outline, Transitions)."
-categories = ["presentation", "layout"]
+keywords = ["outline", "table of contents", "presentation", "dynamic"]
+compiler = "0.12.0"
+categories = ["presentation", "components"]
+repository = "https://github.com/eusebe/typst-navigator"

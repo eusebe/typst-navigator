@@ -19,7 +19,7 @@ Import the package from the Typst Universe:
 ## Core Components
 
 ### Progressive Outline (`progressive-outline`)
-The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ).
+The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](https://github.com/eusebe/typst-navigator/blob/main/docs/progressive-outline.pdf).
 
 ```typ
 #progressive-outline(
@@ -33,7 +33,7 @@ The `progressive-outline` function inserts a table of contents that reflects the
 ```
 
 ### Navigation Bars (`render-miniframes`)
-Generates a bar of dots (miniframes) representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ).
+Generates a bar of dots (miniframes) representing the logical structure of a presentation. See [detailed documentation](https://github.com/eusebe/typst-navigator/blob/main/docs/miniframes.pdf).
 
 ```typ
 #render-miniframes(
@@ -46,7 +46,7 @@ Generates a bar of dots (miniframes) representing the logical structure of a pre
 ```
 
 ### Transition Engine (`render-transition`)
-Automates the creation of roadmap slides using a show rule on structural headings. See [detailed documentation](docs/transition.typ).
+Automates the creation of roadmap slides using a show rule on structural headings. See [detailed documentation](https://github.com/eusebe/typst-navigator/blob/main/docs/transition.pdf).
 
 ```typ
 #show heading.where(level: 1): h => render-transition(
@@ -59,12 +59,17 @@ Automates the creation of roadmap slides using a show rule on structural heading
 
 ## Demos
 
-Integration examples for various frameworks and document types are available in the `examples/` directory:
+Integration examples using different slide engines are available in the `examples/` directory:
 
-- **Polylux**: [Miniframes](examples/polylux_miniframes.typ), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ)
-- **Typslides**: [Miniframes](examples/typslides_miniframes.typ)
-- **Native / Standard Documents**: [Report with local roadmaps](examples/report.typ), [Customizable markers](examples/markers.typ)
+-  [**Presentate**](https://typst.app/universe/package/presentate/): [Miniframes + Progressive Ouline & Transitions](examples/presentate_integration.typ) ($\Rightarrow$ [pdf results](https://github.com/eusebe/typst-navigator/blob/main/examples/presentate_integration.pdf))
+- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes only](examples/polylux_miniframes.typ) ($\Rightarrow$ [pdf results](https://github.com/eusebe/typst-navigator/blob/main/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions only](examples/polylux_progressive_ouline.typ) ($\Rightarrow$ [pdf results](https://github.com/eusebe/typst-navigator/blob/main/examples/polylux_progressive_ouline.pdf))
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes only](examples/typslides_miniframes.typ) ($\Rightarrow$ [pdf results](https://github.com/eusebe/typst-navigator/blob/main/examples/typslides_miniframes.pdf))
+- **Standard Documents**: [Report with local roadmaps](examples/report.typ) ($\Rightarrow$ [pdf results](https://github.com/eusebe/typst-navigator/blob/main/examples/report.pdf)), [Customizable markers](examples/markers.typ) ($\Rightarrow$ [pdf results](https://github.com/eusebe/typst-navigator/blob/main/examples/markers.pdf))
 
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
+
+## Acknowledgement 
+
+Thanks to the [presentate package author](https://github.com/pacaunt/typst-presentate) for his constructive feedback and valuable insights during the development of these tools.
