@@ -23,25 +23,15 @@ Import the package from the Typst Universe:
 The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.0/docs/progressive-outline.pdf)).
 
 
-
 ```typ
-
 #progressive-outline(
-
   level-1-mode: "all",
-
   level-2-mode: "current-parent",
-
   text-styles: (
-
     level-1: (active: (weight: "bold", fill: navy), inactive: 0.5),
-
   ),
-
   spacing: (v-between-1-2: 1em)
-
 )
-
 ```
 
 
@@ -53,56 +43,31 @@ Generates a bar of dots (miniframes) representing the logical structure of a pre
 
 
 ```typ
-
 #render-miniframes(
-
   structure,            // Extracted via get-structure()
-
   current-slide-num,    // Current active slide index
-
   style: "compact",
-
   navigation-pos: "top",
-
   active-color: blue
-
 )
-
 ```
-
-
 
 ### Transition Engine (`render-transition`)
 
 Automates the creation of roadmap slides using a show rule on structural headings. See [detailed documentation](docs/transition.typ) ([pdf](https://github.com/eusebe/typst-navigator/blob/0.1.0/docs/transition.pdf)).
 
-
-
 ```typ
-
 #show heading.where(level: 1): h => render-transition(
-
   h,
-
   mapping: (section: 1, subsection: 2),
-
   slide-func: my-slide-wrapper, // A function (fill, body) => content
-
   transitions: (background: navy)
-
 )
-
 ```
-
-
 
 ## Demos
 
-
-
 Integration examples using different slide engines are available in the `examples/` directory:
-
-
 
 - [**Presentate**](https://typst.app/universe/package/presentate/): [Miniframes + Progressive Outline & Transitions](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.0/examples/presentate_integration.pdf))
 
