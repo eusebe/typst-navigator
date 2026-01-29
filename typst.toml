@@ -9,3 +9,4 @@ keywords = ["outline", "table of contents", "presentation", "dynamic"]
 compiler = "0.12.0"
 categories = ["presentation", "components"]
 repository = "https://github.com/eusebe/typst-navigator"
+exclude = ["tests", "*.pdf", "**/*.pdf", ".gitignore", ".DS_Store"]

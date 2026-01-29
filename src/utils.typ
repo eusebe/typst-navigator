@@ -1,9 +1,10 @@
 /// Merges two dictionaries recursively.
-#let merge-dicts(dictA, base: (:)) = {
-  for (key, val) in dictA {
+#let merge-dicts(dict-a, base: (:)) = {
+  for (key, val) in dict-a {
     if type(val) == dictionary and key in base.keys() {
-      base.insert(key, merge-dicts(dictA.at(key), base: base.at(key)))
-    } else {
+      base.insert(key, merge-dicts(dict-a.at(key), base: base.at(key)))
+    }
+    else {
       base.insert(key, val)
     }
   }
