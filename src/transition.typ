@@ -111,7 +111,6 @@
   context {
     // 1. Apply the reset to the document's base font size and weight
     set text(size: 1em / scale, weight: "regular")
-    
     // 2. Apply explicit overrides if provided
     if base-text-size != auto { set text(size: base-text-size) }
     if base-text-font != auto { set text(font: base-text-font) }

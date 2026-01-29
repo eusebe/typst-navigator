@@ -3,7 +3,7 @@
 #import "../lib.typ" as navigator
 
 // --- CONFIGURATION ---
-#show: typslides.with(
+#show doc: typslides.with(
   ratio: "16-9",
   theme: "bluey",
   show-progress: false,
