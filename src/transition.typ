@@ -64,6 +64,7 @@
   slide-func: none, 
   base-text-size: auto,
   base-text-font: auto,
+  top-padding: 40%,
 ) = {
   if slide-func == none { panic("navigator: slide-func must be provided to render-transition") }
 
@@ -118,7 +119,7 @@
     slide-func(fill: bg-color, {
       set align(top + left)
       
-      v(40%)
+      v(top-padding)
       pad(x: 10%, {
          progressive-outline(
           ..level-modes,
