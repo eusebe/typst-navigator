@@ -49,6 +49,7 @@ The `render-transition` function is designed to automatically generate "roadmap"
   [`numbering-format`], [string | auto], [Typst numbering format string. If `auto`, uses the document's global heading numbering. Default: `auto`.],
   [`base-text-size`], [length | auto], [Base font size for the roadmap text. Default: `auto`.],
   [`base-text-font`], [string | auto], [Font family for the roadmap text. Default: `auto`.],
+  [`top-padding`], [relative | length], [Vertical spacing added above the roadmap on the transition slide. Default: `40%`.],
 )
 
 == The `transitions` dictionary
@@ -80,7 +81,7 @@ For each transition role (`parts`, `sections`, `subsections`), you can define wh
 In a typical presentation, you would set up the transition logic like this:
 
 ```typ
-#import "@preview/navigator:0.1.0": render-transition
+#import "@preview/navigator:0.1.1": render-transition
 
 // 1. Define a wrapper for your slide engine
 #let my-slide-func(fill: white, body) = {
