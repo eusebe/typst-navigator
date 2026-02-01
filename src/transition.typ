@@ -65,6 +65,10 @@
   base-text-size: auto,
   base-text-font: auto,
   top-padding: 40%,
+  content-padding: auto,
+  content-align: auto,
+  content-wrapper: none,
+  headings: auto,
 ) = {
   if slide-func == none { panic("navigator: slide-func must be provided to render-transition") }
 
@@ -115,21 +119,38 @@
     // 2. Apply explicit overrides if provided
     if base-text-size != auto { set text(size: base-text-size) }
     if base-text-font != auto { set text(font: base-text-font) }
+    
+    // 3. Generate the roadmap component
+    let roadmap = progressive-outline(
+      ..level-modes,
+      show-numbering: final-show-numbering,
+      numbering-format: final-numbering-format,
+      target-location: h.location(),
+      text-styles: text-styles,
+      filter: options.filter,
+      headings: headings,
+    )
 
     slide-func(fill: bg-color, {
-      set align(top + left)
-      
-      v(top-padding)
-      pad(x: 10%, {
-         progressive-outline(
-          ..level-modes,
-          show-numbering: final-show-numbering,
-          numbering-format: final-numbering-format,
-          target-location: h.location(),
-          text-styles: text-styles,
-          filter: options.filter,
-        )
-      })
+      if content-wrapper != none {
+         // Expert mode: user takes full control
+         // We pass h and the active state to allow building custom headers/footers
+         import "structure.typ": get-active-headings
+         let active = get-active-headings(h.location())
+         content-wrapper(roadmap, h, active)
+      } else {
+        // Standard configurable mode
+        let align-val = if content-align == auto { top + left } else { content-align }
+        let pad-val = if content-padding == auto { (x: 10%) } else { content-padding }
+        
+        set align(align-val)
+        v(top-padding)
+        if type(pad-val) == dictionary {
+          pad(..pad-val, roadmap)
+        } else {
+          pad(pad-val, roadmap)
+        }
+      }
       
       place(hide(h)) 
     })

@@ -45,6 +45,20 @@
   (h1: active-h1, h2: active-h2, h3: active-h3)
 }
 
+/// Formats a heading body with its numbering if requested.
+#let format-heading(h, show-numbering: true, numbering-format: auto) = {
+  if h == none { return none }
+  let body = h.body
+  if show-numbering {
+    let fmt = if numbering-format == auto { h.numbering } else { numbering-format }
+    let count = counter(heading).at(h.location())
+    if fmt != none and count.any(v => v > 0) {
+      return numbering(fmt, ..count) + " " + body
+    }
+  }
+  body
+}
+
 /// Resolves the title for a slide based on manual input and global config.
 #let resolve-slide-title(manual-title) = context {
   if manual-title != none { return manual-title }
@@ -55,35 +69,26 @@
   let active = get-active-headings(here())
   let mapping = config.mapping
   
-  let format-title(h) = {
-    if h == none { return none }
-    let body = h.body
-    let show-num = config.at("show-heading-numbering", default: false)
-    if show-num {
-      let fmt = config.at("numbering-format", default: auto)
-      let final-fmt = if fmt == auto { h.numbering } else { fmt }
-      let count = counter(heading).at(h.location())
-      if final-fmt != none and count.any(v => v > 0) {
-        return numbering(final-fmt, ..count) + " " + body
-      }
-    }
-    body
-  }
+  let fmt-h(h) = format-heading(
+    h, 
+    show-numbering: config.at("show-heading-numbering", default: false),
+    numbering-format: config.at("numbering-format", default: auto)
+  )
   
   // Try to find the title from the lowest mapped level available
   if "subsection" in mapping and mapping.subsection != none {
     let lvl = "h" + str(mapping.subsection)
-    if active.at(lvl, default: none) != none { return format-title(active.at(lvl)) }
+    if active.at(lvl, default: none) != none { return fmt-h(active.at(lvl)) }
   }
   
   if "section" in mapping and mapping.section != none {
     let lvl = "h" + str(mapping.section)
-    if active.at(lvl, default: none) != none { return format-title(active.at(lvl)) }
+    if active.at(lvl, default: none) != none { return fmt-h(active.at(lvl)) }
   }
   
   if "part" in mapping and mapping.part != none {
     let lvl = "h" + str(mapping.part)
-    if active.at(lvl, default: none) != none { return format-title(active.at(lvl)) }
+    if active.at(lvl, default: none) != none { return fmt-h(active.at(lvl)) }
   }
   
   return none

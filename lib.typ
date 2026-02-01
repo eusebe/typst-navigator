@@ -15,4 +15,5 @@
 #let navigator-config = structure.navigator-config
 #let get-active-headings = structure.get-active-headings
 #let resolve-slide-title = structure.resolve-slide-title
+#let format-heading = structure.format-heading
 #let is-role = structure.is-role
