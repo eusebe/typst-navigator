@@ -48,6 +48,7 @@
   dest: none,
   markers: (:), 
   marker-spacing: (:),
+  width: auto,
 ) = {
   let base-style = text-style
   let active-style = active-text-style
@@ -84,9 +85,9 @@
     else if is-completed { content-completed } 
     else { content-normal }
 
-  block(width: 100%, {
+  block(width: width, {
     hide(content-active)
-    place(top + left, block(width: 100%, target-content))
+    place(top + left, block(width: width, target-content))
   })
 }
 
@@ -238,6 +239,7 @@
           clickable: clickable, dest: h-loc,
           markers: (active: m-active, inactive: m-inactive, completed: m-completed),
           marker-spacing: m-spacing,
+          width: if layout == "horizontal" { auto } else { 100% },
         )
 
         if layout == "horizontal" {
