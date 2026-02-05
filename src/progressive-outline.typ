@@ -84,9 +84,9 @@
     else if is-completed { content-completed } 
     else { content-normal }
 
-  block(width: auto, {
+  block(width: 100%, {
     hide(content-active)
-    place(top + left, target-content)
+    place(top + left, block(width: 100%, target-content))
   })
 }
 
@@ -254,6 +254,7 @@
           let indent = spacing.at("indent-" + str(h.level), default: 0pt)
           
           items-to-render.push(block(
+            width: 100%,
             inset: (top: spacing-top, left: indent),
             item
           ))
@@ -265,7 +266,7 @@
       if layout == "horizontal" {
         stack(dir: ltr, spacing: spacing.at("h-spacing", default: 0.5em), ..items-to-render)
       } else {
-        grid(columns: (auto,), ..items-to-render) 
+        grid(columns: (1fr,), ..items-to-render) 
       }
     }
   }
