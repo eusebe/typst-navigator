@@ -1,4 +1,4 @@
-#import "../../diatypst-main/lib.typ": slides
+#import "@preview/diatypst:0.2.0": slides
 #import "../lib.typ" as navigator
 
 // --- CONFIGURATION ---
