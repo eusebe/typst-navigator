@@ -69,8 +69,16 @@
   content-align: auto,
   content-wrapper: none,
   headings: auto,
+  max-length: auto,
+  use-short-title: auto,
 ) = {
   if slide-func == none { panic("navigator: slide-func must be provided to render-transition") }
+  
+  import "structure.typ": navigator-config
+  let config = navigator-config.get()
+
+  let final-max-length = if max-length == auto { config.at("max-length", default: none) } else { max-length }
+  let final-use-short = if use-short-title == auto { config.at("use-short-title", default: true) } else { use-short-title }
 
   let options = merge-dicts(transitions, base: default-transitions)
   
@@ -129,6 +137,8 @@
       text-styles: text-styles,
       filter: options.filter,
       headings: headings,
+      max-length: final-max-length,
+      use-short-title: final-use-short,
     )
 
     slide-func(fill: bg-color, {

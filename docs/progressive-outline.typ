@@ -48,6 +48,7 @@ This section details all the parameters available for the `progressive-outline` 
   [`marker`], [content | dict | func], [Content displayed before the item. Can be static, a dict by state, or a function `(state, level) => content`.],
   [`clickable`], [bool], [Enables clickable links on headings. Defaults to `true`.],
   [`max-length`], [int | dict], [Maximum length of titles before truncation. Ex: `20` or `(level-1: 15, level-2: 30)`. Defaults to `none`.],
+  [`use-short-title`], [bool | dict], [If true, uses short titles defined via `#metadata("...") <short>` immediately following headings. Default: `false`.],
 )
 
 #v(2em)
@@ -463,6 +464,53 @@ This is particularly useful for horizontal breadcrumbs to ensure they don't over
 )",
 progressive-outline(layout: "horizontal", max-length: 15, separator: " > "))
 
+= Short Titles
+#metadata("Short") <short>
+
+Sometimes automatic truncation is not enough, and you want to display a completely different (shorter) text in the outline while keeping the full descriptive title in the content.
+
+You can define a short title by placing a `#metadata("...") <short>` element immediately after the heading.
+
+== Basic Usage
+#metadata("Example") <short>
+
+By default, `use-short-title` is `false`. To use your manual short titles, you must set it to `true`.
+
+#demo("Using Manual Short Titles",
+"progressive-outline(
+  use-short-title: true,
+  level-1-mode: 'current',
+  level-2-mode: 'current-parent', 
+  level-3-mode: 'current-parent'
+)",
+progressive-outline(
+  use-short-title: true,
+  level-1-mode: "current",
+  level-2-mode: "current-parent", 
+  level-3-mode: "current-parent"
+))
+
+== Disabling Short Titles
+#metadata("Configuration") <short>
+
+If you want to ignore the metadata and force the original titles, keep `use-short-title: false` (the default).
+
+#demo("Original Titles (Default)",
+"progressive-outline(
+  level-1-mode: 'current',
+  level-2-mode: 'current-parent', 
+  level-3-mode: 'current-parent'
+)",
+progressive-outline(
+  level-1-mode: "current",
+  level-2-mode: "current-parent", 
+  level-3-mode: "current-parent"
+))
+
+You can also control this per-level:
+`use-short-title: (level-1: true, level-2: false)`
+
 = Additional information
+
 
 It is optimized to work within presentation themes (like `progressive-outline`), but can be used in any standard Typst document.

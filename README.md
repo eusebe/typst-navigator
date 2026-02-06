@@ -103,9 +103,11 @@ Thanks to the [presentate package author](https://github.com/pacaunt/typst-prese
 ## Changelog
 
 ### 0.1.3
-- **Progressive Outline**: Added `max-length` parameter to automatically truncate long titles.
+- **Title Management**: Added `max-length` (truncation) and manual **Short Titles** support (via `#metadata("...") <short>`) across all core components: `progressive-outline`, `render-miniframes`, and `render-transition`.
+- **Navigation Components**: Added `use-short-title` parameter (`false` by default) to enable manual short titles.
+- **Utility**: Added `resolve-body` and `find-short-titles` to the public API for advanced title management.
 - **Diatypst Integration**: Added comprehensive examples and documentation for integrating with the Diatypst presentation framework.
-- Resolve overlapping subsection titles in progressive outline by forcing width constraints
+- Resolve overlapping subsection titles in progressive outline by forcing width constraints.
 
 ### 0.1.2
 - **`render-transition` improvements**:

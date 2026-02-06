@@ -67,6 +67,8 @@ The `render-transition` function is designed to automatically generate "roadmap"
   [`content-padding`], [length | dict], [Padding around the roadmap content. Default: `(x: 10%)`.],
   [`content-align`], [alignment], [Alignment of the roadmap content. Default: `top + left`.],
   [`content-wrapper`], [function], [A callback `(roadmap, heading, active-state) => content` to completely override the layout logic.],
+  [`max-length`], [int | dict | auto], [Maximum length of titles before truncation. If `auto`, uses global configuration. Default: `auto`.],
+  [`use-short-title`], [bool | dict | auto], [Whether to use short titles. If `auto`, uses global configuration. Default: `auto`.],
 )
 
 == The `transitions` dictionary
@@ -295,3 +297,33 @@ You can configure different roadmap layouts for sections and subsections.
     )
   ))
 }
+
+#v(2em)
+
+= Short Titles & Truncation
+
+`render-transition` inherits the short title and truncation capabilities of `progressive-outline`. This is especially useful for roadmap slides where titles can be very long.
+
+#context {
+  let h = query(heading.where(level: 1)).at(1)
+  let heads = query(heading.where(level: 1).or(heading.where(level: 2))).slice(1, 6)
+
+  demo("Short Titles & Truncation",
+  "render-transition(
+  h,
+  use-short-title: true,
+  max-length: 15,
+  slide-func: my-slide-func,
+)",
+  render-transition(
+    h,
+    mapping: (section: 1, subsection: 2),
+    theme-colors: (primary: navy),
+    slide-func: mock-slide-func,
+    headings: heads,
+    top-padding: 20pt,
+    use-short-title: true,
+    max-length: 15
+  ))
+}
+

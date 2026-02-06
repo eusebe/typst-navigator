@@ -9,23 +9,26 @@
 // --- MOCK DATA FOR DEMONSTRATION ---
 #let mock-structure = (
   (
-    title: [Introduction],
+    title: [1. General Introduction to the Project],
+    short-title: [1. Intro],
     loc: none,
     subsections: (
-      (title: [Context], loc: none, slides: ((number: 1, loc: none), (number: 2, loc: none))),
-      (title: [Goals], loc: none, slides: ((number: 3, loc: none),)),
+      (title: [1.1 Background Context], short-title: [1.1 Context], loc: none, slides: ((number: 1, loc: none), (number: 2, loc: none))),
+      (title: [1.2 Objectives and Goals], short-title: [1.2 Goals], loc: none, slides: ((number: 3, loc: none),)),
     )
   ),
   (
-    title: [Methodology],
+    title: [2. Scientific Methodology and Data Collection],
+    short-title: [2. Methods],
     loc: none,
     subsections: (
-      (title: [Data], loc: none, slides: ((number: 4, loc: none), (number: 5, loc: none), (number: 6, loc: none))),
-      (title: [Tools], loc: none, slides: ((number: 7, loc: none),)),
+      (title: [2.1 Raw Data], loc: none, slides: ((number: 4, loc: none), (number: 5, loc: none), (number: 6, loc: none))),
+      (title: [2.2 Analysis Tools], short-title: [2.2 Tools], loc: none, slides: ((number: 7, loc: none),)),
     )
   ),
   (
-    title: [Results],
+    title: [3. Preliminary Results],
+    short-title: [3. Results],
     loc: none,
     subsections: (
       (title: none, loc: none, slides: ((number: 8, loc: none), (number: 9, loc: none))),
@@ -88,6 +91,8 @@ The `render-miniframes` function generates a navigation bar showing the progress
   [`radius`], [length | dict], [Corner rounding of the background block. Can be a single length for all corners, or a dictionary (e.g., `(top: 5pt)`) for specific corners. Default: `0pt`.],
   [`width`], [length], [Total width of the block. Default: `100%`.],
   [`outset-x`], [length], [Horizontal bleed. Useful to make the bar touch page edges.],
+  [`max-length`], [int | dict], [Maximum length of titles before truncation. Ex: `10` or `(level-1: 8, level-2: 15)`. Defaults to `none`.],
+  [`use-short-title`], [bool | dict], [If true, uses short titles defined via `#metadata("...") <short>` (must be collected via `get-structure(all-shorts: ...)`). Default: `false`.],
 )
 
 == Structure Extraction
@@ -113,6 +118,48 @@ Determines the index of the current slide relative to the extracted structure.
   [`slide-selector`], [selector | auto], [The metadata type used to identify slides. Default is `(t: "LogicalSlide")`. Useful for custom engines (e.g., Polylux).],
   [`filter-selector`], [selector | none], [If provided, only pages containing this selector will be counted. Useful to exclude transition slides that might share the same slide metadata.],
 )
+
+= Short Titles & Truncation
+
+Like `progressive-outline`, Miniframes supports short titles and truncation. This is crucial for navigation bars which have limited horizontal space.
+
+== Collecting Short Titles
+You must pass the short titles to the structure extractor.
+
+```typ
+#let struct = get-structure(
+  all-shorts: query(<short>)
+)
+```
+
+== Truncation & Short Titles
+Then, configure the rendering. By default, `use-short-title` is `false`.
+
+#demo("1. Original Titles (Default)",
+"render-miniframes(structure, 4)",
+render-miniframes(mock-structure, 4, fill: navy))
+
+#demo("2. Automatic Truncation",
+"render-miniframes(
+  structure, 4,
+  max-length: 12
+)",
+render-miniframes(mock-structure, 4, max-length: 12, fill: navy))
+
+#demo("3. Manual Short Titles",
+"render-miniframes(
+  structure, 4,
+  use-short-title: true
+)",
+render-miniframes(mock-structure, 4, use-short-title: true, fill: navy))
+
+#demo("4. Combined: Short Titles + Truncation",
+"render-miniframes(
+  structure, 4,
+  use-short-title: true,
+  max-length: 8
+)",
+render-miniframes(mock-structure, 4, use-short-title: true, max-length: 8, fill: navy))
 
 == Function Signature
 `render-miniframes(structure, current-slide-num, ...)`

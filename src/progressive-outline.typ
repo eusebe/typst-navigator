@@ -1,5 +1,5 @@
-#import "structure.typ": get-active-headings
-#import "utils.typ": extract-text, truncate-text
+#import "structure.typ": get-active-headings, find-short-titles
+#import "utils.typ": extract-text, truncate-text, resolve-body
 
 /// Helper function to resolve styles with opacity/inheritance logic
 #let resolve-state-style(active-style, target-style) = {
@@ -132,10 +132,16 @@
   clickable: true,
   marker: none,
   max-length: none,
+  use-short-title: false,
 ) = {
-  context {
-    let loc = if target-location == auto { here() } else { target-location }
-    let all-headings = if headings == auto { query(heading.where(outlined: true)) } else { headings }
+    context {
+      let loc = if target-location == auto { here() } else { target-location }
+      let all-headings = if headings == auto { query(heading.where(outlined: true)) } else { headings }
+      all-headings = all-headings.sorted(key: h => (h.location().page(), if h.location().position() != none { h.location().position().y } else { 0pt }))
+      
+      let all-shorts = query(<short>)
+      let short-titles = find-short-titles(all-headings, all-shorts)
+  
     
     let active-state = get-active-headings(loc, match-page-only: match-page-only, headings: all-headings)
     let active-h1 = active-state.h1
@@ -144,13 +150,13 @@
     
     let items-to-render = ()
     let last-level = 0
-
+    
     let current-h1 = none
     let current-h2 = none
     let is-h1-filtered = false
     let is-h2-filtered = false
 
-    for h in all-headings {
+    for (i, h) in all-headings.enumerate() {
       if h.level == 1 { current-h1 = h; current-h2 = none; is-h1-filtered = false; is-h2-filtered = false } 
       else if h.level == 2 { current-h2 = h; is-h2-filtered = false }
 
@@ -240,10 +246,18 @@
           max-length
         }
 
-        let display-body = h.body
-        if current-max-length != none {
-          display-body = truncate-text(extract-text(h.body), current-max-length)
+        let current-use-short = if type(use-short-title) == dictionary {
+          use-short-title.at("level-" + str(h.level), default: use-short-title.at(str(h.level), default: true))
+        } else {
+          use-short-title
         }
+
+        let display-body = resolve-body(
+          h.body, 
+          short-title: short-titles.at(i),
+          use-short-title: current-use-short,
+          max-length: current-max-length
+        )
 
         let item = render-item(
           display-body, is-active: is-active, is-completed: is-completed,

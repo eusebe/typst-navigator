@@ -13,6 +13,7 @@
 
 /// Extracts plain text from Typst content.
 #let extract-text(body) = {
+  if body == none { return "" }
   let t = type(body)
   if t == str {
     return body
@@ -50,6 +51,24 @@
   }
   return text-str.clusters().slice(0, max-length).join("") + "…"
 }
+
+/// Resolves the final body content for a heading based on priority:
+/// 1. Short title (if enabled and present)
+/// 2. Original title
+/// 3. Truncation (if max-length is set)
+#let resolve-body(original-body, short-title: none, use-short-title: true, max-length: none) = {
+  let body = original-body
+  if use-short-title and short-title != none {
+    body = short-title
+  }
+  
+  if max-length != none {
+    body = truncate-text(extract-text(body), max-length)
+  }
+  
+  return body
+}
+
 
 /// Standardized slide title component (visual only, no heading)
 #let slide-title(content, size: 1.2em, weight: "bold", color: black, inset: (bottom: 0.8em)) = {

@@ -1,6 +1,9 @@
+#import "structure.typ": find-short-titles
+#import "utils.typ": resolve-body
+
 /// Extraction of the presentation structure.
 /// Returns a dictionary with sections, each containing subsections, each containing logical slides.
-#let get-structure(slide-selector: auto, filter-selector: none) = {
+#let get-structure(slide-selector: auto, filter-selector: none, all-shorts: none) = {
   let headings = query(heading.where(outlined: true).or(heading.where(level: 1)).or(heading.where(level: 2)).or(heading.where(level: 3)))
   
   // Determine allowed pages if a filter is provided
@@ -44,12 +47,16 @@
   let current-subsubsection = none
 
   // Sort headings by location
-  let sorted-headings = headings.sorted(key: h => (h.location().page(), h.location().position().y))
+  let sorted-headings = headings.sorted(key: h => (h.location().page(), if h.location().position() != none { h.location().position().y } else { 0pt }))
   
-  for h in sorted-headings {
+  let short-titles = if all-shorts != none { find-short-titles(sorted-headings, all-shorts) } else { () }
+  
+  for (i, h) in sorted-headings.enumerate() {
+    let s-title = if short-titles.len() > i { short-titles.at(i) } else { none }
     if h.level == 1 {
       current-section = (
         title: h.body,
+        short-title: s-title,
         numbering: h.numbering,
         counter: counter(heading).at(h.location()),
         level: h.level,
@@ -66,6 +73,7 @@
       }
       current-subsection = (
         title: h.body,
+        short-title: s-title,
         numbering: h.numbering,
         counter: counter(heading).at(h.location()),
         level: h.level,
@@ -85,6 +93,7 @@
       }
       current-subsubsection = (
         title: h.body,
+        short-title: s-title,
         numbering: h.numbering,
         counter: counter(heading).at(h.location()),
         level: h.level,
@@ -217,6 +226,8 @@
   outset-x: 0pt, 
   radius: 0pt,
   navigation-pos: "bottom", // "top" (dots above titles) or "bottom" (dots below titles)
+  max-length: none,
+  use-short-title: false,
 ) = {
   let marker(is-active, is-future) = {
     let color = if is-active { active-color } else if is-future { inactive-color } else { active-color.transparentize(40%) }
@@ -240,7 +251,27 @@
   }
   
   let fmt-title(item) = {
-    let t = item.title
+    let level = item.at("level", default: 1)
+    
+    let current-max-length = if type(max-length) == dictionary {
+      max-length.at("level-" + str(level), default: max-length.at(str(level), default: none))
+    } else {
+      max-length
+    }
+
+    let current-use-short = if type(use-short-title) == dictionary {
+      use-short-title.at("level-" + str(level), default: use-short-title.at(str(level), default: true))
+    } else {
+      use-short-title
+    }
+
+    let t = resolve-body(
+      item.title, 
+      short-title: item.at("short-title", default: none),
+      use-short-title: current-use-short,
+      max-length: current-max-length
+    )
+
     if t == none { return none }
     if show-numbering {
       let fmt = if numbering-format == auto { item.at("numbering", default: none) } else { numbering-format }

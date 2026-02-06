@@ -1,10 +1,75 @@
+#import "utils.typ": resolve-body
+
 /// Global state for structure mapping and auto-titling
 #let navigator-config = state("navigator-config", (
   mapping: (section: 1, subsection: 2),
   auto-title: false,
   show-heading-numbering: true,
   numbering-format: auto,
+  use-short-title: false,
+  max-length: none,
 ))
+
+
+
+/// Robust comparison of two locations.
+#let is-before(loc-a, loc-b) = {
+  if loc-a == none or loc-b == none { return false }
+  let pg-a = loc-a.page()
+  let pg-b = loc-b.page()
+  if pg-a < pg-b { return true }
+  if pg-a > pg-b { return false }
+  
+  let pos-a = loc-a.position()
+  let pos-b = loc-b.position()
+  if pos-a != none and pos-b != none {
+    return pos-a.y < pos-b.y
+  }
+  // Fallback if positions are not available: assume true if we are in document order
+  // but for safety in general helper, return false
+  return false
+}
+
+/// Returns an array of short titles corresponding to the provided headings.
+/// Each entry in the returned array is the metadata value of <short> 
+/// found after the corresponding heading but before the next one.
+#let find-short-titles(all-headings, all-shorts) = {
+  if all-headings.len() == 0 { return () }
+  if all-shorts == none or all-shorts.len() == 0 { 
+    return range(all-headings.len()).map(i => none) 
+  }
+  
+  let mapping = (:)
+  for m in all-shorts {
+    let m-loc = m.location()
+    let m-pg = m-loc.page()
+    let m-y = if m-loc.position() != none { m-loc.position().y } else { 0pt }
+    
+    let best-h-idx = -1
+    for i in range(all-headings.len()) {
+      let h-loc = all-headings.at(i).location()
+      let h-pg = h-loc.page()
+      let h-y = if h-loc.position() != none { h-loc.position().y } else { 0pt }
+      
+      if h-pg < m-pg or (h-pg == m-pg and h-y < m-y) {
+        best-h-idx = i
+      } else {
+        break
+      }
+    }
+    
+    if best-h-idx != -1 {
+      if m.has("value") {
+        mapping.insert(str(best-h-idx), m.value)
+      }
+    }
+  }
+  
+  return range(all-headings.len()).map(i => mapping.at(str(i), default: none))
+}
+
+
+
 
 /// Returns the active headings (h1, h2, h3) at a given location using query.
 #let get-active-headings(loc, match-page-only: false, headings: none) = {
@@ -67,32 +132,104 @@
   if not config.auto-title { return none }
   
   let active = get-active-headings(here())
+  let all-shorts = query(<short>)
   let mapping = config.mapping
   
-  let fmt-h(h) = format-heading(
-    h, 
-    show-numbering: config.at("show-heading-numbering", default: false),
-    numbering-format: config.at("numbering-format", default: auto)
-  )
+  let get-short(h) = {
+    if h == none { return none }
+    // find-short-titles is expensive to call repeatedly, but resolve-slide-title is called per slide.
+    // However, we only need it for the specific active headings.
+    let h-loc = h.location()
+    let my-short = all-shorts.find(m => {
+      let m-loc = m.location()
+      m-loc.page() == h-loc.page() and m-loc.position() != none and h-loc.position() != none and m-loc.position().y > h-loc.position().y
+      // This is a simplified version of find-short-titles logic for a single heading
+    })
+    if my-short != none { my-short.value } else { none }
+  }
+
+  let fmt-h(h) = {
+    if h == none { return none }
+    let level = h.level
+    let current-max-length = if type(config.max-length) == dictionary {
+      config.max-length.at("level-" + str(level), default: config.max-length.at(str(level), default: none))
+    } else {
+      config.max-length
+    }
+
+    let current-use-short = if type(config.use-short-title) == dictionary {
+      config.use-short-title.at("level-" + str(level), default: config.use-short-title.at(str(level), default: true))
+    } else {
+      config.use-short-title
+    }
+
+    let body = resolve-body(
+      h.body,
+      short-title: get-short(h),
+      use-short-title: current-use-short,
+      max-length: current-max-length
+    )
+
+    format-heading(
+      h, 
+      show-numbering: config.at("show-heading-numbering", default: false),
+      numbering-format: config.at("numbering-format", default: auto)
+    )
+    // Wait, format-heading uses h.body. I need to override it.
+  }
+  
+  // Re-implementing a bit of format-heading logic here to avoid h.body issue
+  let final-fmt(h) = {
+    if h == none { return none }
+    let level = h.level
+    let current-max-length = if type(config.max-length) == dictionary {
+      config.max-length.at("level-" + str(level), default: config.max-length.at(str(level), default: none))
+    } else {
+      config.max-length
+    }
+
+    let current-use-short = if type(config.use-short-title) == dictionary {
+      config.use-short-title.at("level-" + str(level), default: config.use-short-title.at(str(level), default: true))
+    } else {
+      config.use-short-title
+    }
+
+    let body = resolve-body(
+      h.body,
+      short-title: get-short(h),
+      use-short-title: current-use-short,
+      max-length: current-max-length
+    )
+
+    if config.at("show-heading-numbering", default: false) {
+      let fmt = if config.numbering-format == auto { h.numbering } else { config.numbering-format }
+      let count = counter(heading).at(h.location())
+      if fmt != none and count.any(v => v > 0) {
+        return numbering(fmt, ..count) + " " + body
+      }
+    }
+    body
+  }
   
   // Try to find the title from the lowest mapped level available
   if "subsection" in mapping and mapping.subsection != none {
     let lvl = "h" + str(mapping.subsection)
-    if active.at(lvl, default: none) != none { return fmt-h(active.at(lvl)) }
+    if active.at(lvl, default: none) != none { return final-fmt(active.at(lvl)) }
   }
   
   if "section" in mapping and mapping.section != none {
     let lvl = "h" + str(mapping.section)
-    if active.at(lvl, default: none) != none { return fmt-h(active.at(lvl)) }
+    if active.at(lvl, default: none) != none { return final-fmt(active.at(lvl)) }
   }
   
   if "part" in mapping and mapping.part != none {
     let lvl = "h" + str(mapping.part)
-    if active.at(lvl, default: none) != none { return fmt-h(active.at(lvl)) }
+    if active.at(lvl, default: none) != none { return final-fmt(active.at(lvl)) }
   }
   
   return none
 }
+
 
 /// Helper to check if a heading level matches a mapped role
 #let is-role(mapping, lvl, role) = {
