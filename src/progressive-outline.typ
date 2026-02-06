@@ -1,4 +1,5 @@
 #import "structure.typ": get-active-headings
+#import "utils.typ": extract-text, truncate-text
 
 /// Helper function to resolve styles with opacity/inheritance logic
 #let resolve-state-style(active-style, target-style) = {
@@ -130,6 +131,7 @@
   headings: auto,
   clickable: true,
   marker: none,
+  max-length: none,
 ) = {
   context {
     let loc = if target-location == auto { here() } else { target-location }
@@ -232,8 +234,19 @@
           if fmt != none and trimmed-idx.any(v => v > 0) { fmt } else { none }
         } else { none }
 
+        let current-max-length = if type(max-length) == dictionary {
+          max-length.at("level-" + str(h.level), default: max-length.at(str(h.level), default: none))
+        } else {
+          max-length
+        }
+
+        let display-body = h.body
+        if current-max-length != none {
+          display-body = truncate-text(extract-text(h.body), current-max-length)
+        }
+
         let item = render-item(
-          h.body, is-active: is-active, is-completed: is-completed,
+          display-body, is-active: is-active, is-completed: is-completed,
           text-style: s-inactive, active-text-style: s-active, completed-text-style: s-completed,
           numbering-format: final-fmt, index: trimmed-idx,
           clickable: clickable, dest: h-loc,
