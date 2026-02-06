@@ -11,6 +11,46 @@
   return base
 }
 
+/// Extracts plain text from Typst content.
+#let extract-text(body) = {
+  let t = type(body)
+  if t == str {
+    return body
+  } else if t != content {
+    return str(body)
+  }
+
+  if body.has("text") {
+    return body.text
+  }
+
+  let f = body.func()
+  let name = repr(f)
+  if name == "space" {
+    return " "
+  } else if name == "linebreak" {
+    return "\n"
+  } else if name == "smartquote" {
+    return if body.double { "\"" } else { "'" }
+  } else if body.has("body") {
+    return extract-text(body.body)
+  } else if body.has("children") {
+    return body.children.map(extract-text).join("")
+  } else if body.has("value") {
+    return str(body.value)
+  } else {
+    return ""
+  }
+}
+
+/// Truncates text to a maximum length and adds an ellipsis if needed.
+#let truncate-text(text-str, max-length) = {
+  if max-length == none or text-str.clusters().len() <= max-length {
+    return text-str
+  }
+  return text-str.clusters().slice(0, max-length).join("") + "…"
+}
+
 /// Standardized slide title component (visual only, no heading)
 #let slide-title(content, size: 1.2em, weight: "bold", color: black, inset: (bottom: 0.8em)) = {
   if content == none { return none }
