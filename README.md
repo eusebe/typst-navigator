@@ -30,13 +30,21 @@ The `progressive-outline` function inserts a table of contents that reflects the
   text-styles: (
     level-1: (active: (weight: "bold", fill: navy), inactive: 0.5),
   ),
-  spacing: (v-between-1-2: 1em)
+  spacing: (v-between-1-2: 1em),
+  max-length: 30 // Truncate all levels to 30 characters
 )
 ```
 
+## Core Components
 
+### Progressive Outline (`progressive-outline`)
 
-### Navigation Bars (`render-miniframes`)
+The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/progressive-outline.pdf)).
+
+**Parameters:**
+- `level-n-mode`: Controls how levels are displayed (`"all"`, `"current"`, `"current-parent"`, `"none"`).
+- `max-length`: (`int` or `dictionary`) Maximum length of titles before truncation. Ex: `20` or `(level-1: 15, level-2: 30)`.
+- ... (and other existing parameters)
 
 Generates a bar of dots (miniframes) representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/miniframes.pdf)).
 
@@ -95,6 +103,7 @@ Thanks to the [presentate package author](https://github.com/pacaunt/typst-prese
 ## Changelog
 
 ### 0.1.3
+- **Progressive Outline**: Added `max-length` parameter to automatically truncate long titles.
 - **Diatypst Integration**: Added comprehensive examples and documentation for integrating with the Diatypst presentation framework.
 - Resolve overlapping subsection titles in progressive outline by forcing width constraints
 

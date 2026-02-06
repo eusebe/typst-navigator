@@ -47,6 +47,7 @@ This section details all the parameters available for the `progressive-outline` 
   [`filter`], [func], [A callback function `(heading) => bool` to programmatically include or exclude headings.],
   [`marker`], [content | dict | func], [Content displayed before the item. Can be static, a dict by state, or a function `(state, level) => content`.],
   [`clickable`], [bool], [Enables clickable links on headings. Defaults to `true`.],
+  [`max-length`], [int | dict], [Maximum length of titles before truncation. Ex: `20` or `(level-1: 15, level-2: 30)`. Defaults to `none`.],
 )
 
 #v(2em)
@@ -429,6 +430,38 @@ Setting `match-page-only: true` solves this by considering any heading on the cu
 #demo("Sidebar Logic",
 "match-page-only: true",
 progressive-outline(match-page-only: true, level-2-mode: "none"))
+
+= Title Truncation
+For very long titles that might break the layout (especially in sidebars or breadcrumbs), you can use the `max-length` parameter to automatically truncate the text.
+
+== Global Truncation
+Setting `max-length` to an integer applies the limit to all heading levels.
+
+#demo("Global Truncation (Max 20 chars)",
+"progressive-outline(
+  max-length: 20
+)",
+progressive-outline(max-length: 20))
+
+== Per-level Truncation
+You can also pass a dictionary to define different limits for each level.
+
+#demo("Granular Truncation",
+"progressive-outline(
+  max-length: (level-1: 10, level-2: 30)
+)",
+progressive-outline(max-length: (level-1: 10, level-2: 30)))
+
+== Horizontal Truncation
+This is particularly useful for horizontal breadcrumbs to ensure they don't overflow the page width.
+
+#demo("Truncated Breadcrumb",
+"progressive-outline(
+  layout: 'horizontal',
+  max-length: 15,
+  separator: ' > '
+)",
+progressive-outline(layout: "horizontal", max-length: 15, separator: " > "))
 
 = Additional information
 
