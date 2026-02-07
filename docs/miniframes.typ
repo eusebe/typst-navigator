@@ -95,19 +95,19 @@ The `render-miniframes` function generates a navigation bar showing the progress
   [`use-short-title`], [bool | dict], [If true, uses short titles defined via `#metadata("...") <short>` (must be collected via `get-structure(all-shorts: ...)`). Default: `false`.],
 )
 
-== Structure Extraction
+= Structure Extraction
 
 To work, the navigation bar needs to know the presentation structure. Two functions are provided to extract this data from metadata markers.
 
-=== `get-structure`
+== `get-structure`
 `get-structure(slide-selector: auto, filter-selector: none)` \
 Scans the document for headings and slide markers. Returns a structure dictionary.
 
-=== `get-current-logical-slide-number`
+== `get-current-logical-slide-number`
 `get-current-logical-slide-number(slide-selector: auto, filter-selector: none)` \
 Determines the index of the current slide relative to the extracted structure.
 
-=== Selection Parameters
+== Selection Parameters
 
 #table(
   columns: (1.5fr, 1fr, 3fr),
@@ -118,6 +118,36 @@ Determines the index of the current slide relative to the extracted structure.
   [`slide-selector`], [selector | auto], [The metadata type used to identify slides. Default is `(t: "LogicalSlide")`. Useful for custom engines (e.g., Polylux).],
   [`filter-selector`], [selector | none], [If provided, only pages containing this selector will be counted. Useful to exclude transition slides that might share the same slide metadata.],
 )
+
+= Function Signature
+`render-miniframes(structure, current-slide-num, ...)`
+
+== The `structure` object
+The `structure` argument is an array of section dictionaries. Each section has the following schema:
+
+- *Section*: `(title: content, loc: location, subsections: array)`
+- *Subsection*: `(title: content, loc: location, slides: array)` OR `(title: content, loc: location, subsections: array)` (if 3 levels are used).
+- *Slide*: `(number: integer, loc: location)`
+
+=== What is `loc`?
+The `loc` field expects a Typst *location* object. 
+- *Purpose*: It defines the destination for navigation links. If a valid location is provided, clicking on the section title or the dot will take the user to that specific position in the PDF.
+- *Disabling links*: If set to `none`, the element will be displayed normally but will not be clickable. This is used in the mock data of this guide.
+
+== The `current-slide-num` argument
+An integer representing the current slide number. The function compares this value with the `number` field of each slide in the structure to determine its state:
+- *Active*: `slide.number == current-slide-num`
+- *Completed*: `slide.number < current-slide-num`
+- *Future*: `slide.number > current-slide-num`
+
+#v(2em)
+
+= Basic usage
+By default, the navigation bar uses the `"grid"` style and shows section titles.
+
+#demo("Default Grid Style",
+"render-miniframes(structure, 4, use-short-title: true)",
+render-miniframes(mock-structure, 4, use-short-title: true, fill: navy))
 
 = Short Titles & Truncation
 
@@ -161,36 +191,6 @@ render-miniframes(mock-structure, 4, use-short-title: true, fill: navy))
 )",
 render-miniframes(mock-structure, 4, use-short-title: true, max-length: 8, fill: navy))
 
-== Function Signature
-`render-miniframes(structure, current-slide-num, ...)`
-
-=== The `structure` object
-The `structure` argument is an array of section dictionaries. Each section has the following schema:
-
-- *Section*: `(title: content, loc: location, subsections: array)`
-- *Subsection*: `(title: content, loc: location, slides: array)` OR `(title: content, loc: location, subsections: array)` (if 3 levels are used).
-- *Slide*: `(number: integer, loc: location)`
-
-==== What is `loc`?
-The `loc` field expects a Typst *location* object. 
-- *Purpose*: It defines the destination for navigation links. If a valid location is provided, clicking on the section title or the dot will take the user to that specific position in the PDF.
-- *Disabling links*: If set to `none`, the element will be displayed normally but will not be clickable. This is used in the mock data of this guide.
-
-=== The `current-slide-num` argument
-An integer representing the current slide number. The function compares this value with the `number` field of each slide in the structure to determine its state:
-- *Active*: `slide.number == current-slide-num`
-- *Completed*: `slide.number < current-slide-num`
-- *Future*: `slide.number > current-slide-num`
-
-#v(2em)
-
-= Basic usage
-By default, the navigation bar uses the `"grid"` style and shows section titles.
-
-#demo("Default Grid Style",
-"render-miniframes(structure, 4)",
-render-miniframes(mock-structure, 4, fill: navy))
-
 = Layout Styles
 
 == Compact Mode
@@ -199,9 +199,10 @@ In `"compact"` mode, all slide markers of a section are grouped on a single line
 #demo("Compact Mode",
 "render-miniframes(
   structure, 4, 
-  style: 'compact'
+  style: 'compact',
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, style: "compact", fill: navy))
+render-miniframes(mock-structure, 4, style: "compact", use-short-title: true, fill: navy))
 
 == Grid Mode
 The `"grid"` style is ideal for presentations with many subsections, as it aligns them vertically.
@@ -210,9 +211,10 @@ The `"grid"` style is ideal for presentations with many subsections, as it align
 "render-miniframes(
   structure, 4, 
   style: 'grid',
-  show-level2-titles: true
+  show-level2-titles: true,
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, style: "grid", show-level2-titles: true, fill: navy))
+render-miniframes(mock-structure, 4, style: "grid", show-level2-titles: true, use-short-title: true, fill: navy))
 
 == Hiding Titles
 You can hide titles at different levels to obtain a minimalist bar.
@@ -221,16 +223,18 @@ You can hide titles at different levels to obtain a minimalist bar.
 "render-miniframes(
   structure, 4, 
   style: 'grid',
-  show-level2-titles: false
+  show-level2-titles: false,
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, style: "grid", show-level2-titles: false, fill: navy))
+render-miniframes(mock-structure, 4, style: "grid", show-level2-titles: false, use-short-title: true, fill: navy))
 
 #demo("Hiding Section Titles (Dots Only)",
 "render-miniframes(
   structure, 4, 
-  show-level1-titles: false
+  show-level1-titles: false,
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, show-level1-titles: false, fill: navy))
+render-miniframes(mock-structure, 4, show-level1-titles: false, use-short-title: true, fill: navy))
 
 = Customization
 
@@ -241,9 +245,10 @@ Change the shape and size of the progress indicators.
 "render-miniframes(
   structure, 4, 
   marker-shape: 'square',
-  marker-size: 6pt
+  marker-size: 6pt,
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, marker-shape: "square", marker-size: 6pt, fill: navy))
+render-miniframes(mock-structure, 4, marker-shape: "square", marker-size: 6pt, use-short-title: true, fill: navy))
 
 == Colors & Typography
 Fine-tune the appearance of markers and labels.
@@ -255,9 +260,10 @@ Fine-tune the appearance of markers and labels.
   inactive-color: gray,
   text-color: luma(200),
   text-size: 8pt,
-  fill: rgb('#2d3436')
+  fill: rgb('#2d3436'),
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, active-color: yellow, inactive-color: gray, text-color: luma(200), text-size: 8pt, fill: rgb("#2d3436")))
+render-miniframes(mock-structure, 4, active-color: yellow, inactive-color: gray, text-color: luma(200), text-size: 8pt, fill: rgb("#2d3436"), use-short-title: true))
 
 == Alignment & Spacing
 Control the rhythm and positioning of the navigation elements.
@@ -268,9 +274,10 @@ Control the rhythm and positioning of the navigation elements.
   align-mode: 'center',
   dots-align: 'center',
   gap: 3em,
-  line-spacing: 8pt
+  line-spacing: 8pt,
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, align-mode: "center", dots-align: "center", gap: 3em, line-spacing: 8pt, fill: navy))
+render-miniframes(mock-structure, 4, align-mode: "center", dots-align: "center", gap: 3em, line-spacing: 8pt, use-short-title: true, fill: navy))
 
 == Advanced Layout
 Use `inset` and `width` to integrate the bar into specific layout zones.
@@ -281,15 +288,17 @@ Use `inset` and `width` to integrate the bar into specific layout zones.
   width: 60%,
   align-mode: 'center',
   inset: 15pt,
-  show-level1-titles: false
+  show-level1-titles: false,
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, width: 60%, align-mode: "center", inset: 15pt, show-level1-titles: false, fill: navy))
+render-miniframes(mock-structure, 4, width: 60%, align-mode: "center", inset: 15pt, show-level1-titles: false, use-short-title: true, fill: navy))
 
 #demo("Rounded Corners",
 "render-miniframes(
   structure, 4, 
   radius: 10pt,
   fill: rgb('#34495e'),
-  inset: (x: 2em, y: 1em)
+  inset: (x: 2em, y: 1em),
+  use-short-title: true
 )",
-render-miniframes(mock-structure, 4, radius: 10pt, fill: rgb("#34495e"), inset: (x: 2em, y: 1em)))
+render-miniframes(mock-structure, 4, radius: 10pt, fill: rgb("#34495e"), inset: (x: 2em, y: 1em), use-short-title: true))
