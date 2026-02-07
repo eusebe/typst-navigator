@@ -1,12 +1,13 @@
 # Navigator
 
-**Navigator** is a navigation engine for Typst. It provides a modular suite of tools to generate dynamic tables of contents (progressive outlines), progress bars (miniframes), and automated transition slides. It should be compatible with any presentation framework (e.g., Polylux, Presentate, Typslides). All tools can also be used for any native Typst documents (particularly the `progressive-outline` function), but they are especially useful when used within a structured presentation.
+**Navigator** is a navigation engine for Typst. It provides a modular suite of tools to generate dynamic tables of contents (progressive outlines), progress bars (miniframes), and automated transition slides. It is compatible with any presentation framework (e.g., Polylux, Presentate, Typslides) and standard Typst documents.
 
 ## Key Features
 
-- **Progressive Outline**: A roadmap component that adapts to the current position in the document, with smart state management (active, completed, future).
-- **Flexible Miniframes**: Configurable progress markers (compact vs. grid modes, alignment, vertical positioning).
-- **Transition Engine**: Automatically generates "roadmap" slides during section changes via simple show rules.
+- *Global Configuration*: Centralize your theme settings (colors, mapping, slide function) in one place.
+- *Progressive Outline*: A roadmap component that adapts to the current position, with smart state management.
+- *Flexible Miniframes*: Configurable progress markers (compact vs. grid modes).
+- *Transition Engine*: Automatically generates "roadmap" slides via simple show rules.
 
 ## Installation
 
@@ -16,23 +17,17 @@ Import the package from the Typst Universe:
 #import "@preview/navigator:0.1.3": *
 ```
 
-## Core Components
+## Global Configuration
 
-### Progressive Outline (`progressive-outline`)
-
-The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/progressive-outline.pdf)).
-
+Navigator 0.1.3 introduces a centralized configuration state. Setting this once at the beginning of your document allows you to use all other functions without arguments.
 
 ```typ
-#progressive-outline(
-  level-1-mode: "all",
-  level-2-mode: "current-parent",
-  text-styles: (
-    level-1: (active: (weight: "bold", fill: navy), inactive: 0.5),
-  ),
-  spacing: (v-between-1-2: 1em),
-  max-length: 30 // Truncate all levels to 30 characters
-)
+#navigator-config.update(c => {
+  c.mapping = (section: 1, subsection: 2)
+  c.theme-colors = (primary: navy, accent: orange)
+  c.slide-func = my-engine.slide
+  c
+})
 ```
 
 ## Core Components
@@ -41,83 +36,62 @@ The `progressive-outline` function inserts a table of contents that reflects the
 
 The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/progressive-outline.pdf)).
 
-**Parameters:**
-- `level-n-mode`: Controls how levels are displayed (`"all"`, `"current"`, `"current-parent"`, `"none"`).
-- `max-length`: (`int` or `dictionary`) Maximum length of titles before truncation. Ex: `20` or `(level-1: 15, level-2: 30)`.
-- ... (and other existing parameters)
+```typ
+// Respects global config automatically
+#progressive-outline()
 
-Generates a bar of dots (miniframes) representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/miniframes.pdf)).
+// Or manual override
+#progressive-outline(level-1-mode: "current", text-styles: (level-1: (fill: red)))
+```
 
+### Miniframes (`render-miniframes`)
 
+Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/miniframes.pdf)).
 
 ```typ
-#render-miniframes(
-  structure,            // Extracted via get-structure()
-  current-slide-num,    // Current active slide index
-  style: "compact",
-  navigation-pos: "top",
-  active-color: blue
-)
+// Simplest usage (context required for auto-resolution)
+#set page(header: context render-miniframes())
 ```
 
 ### Transition Engine (`render-transition`)
 
-Automates the creation of roadmap slides using a show rule on structural headings. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/transition.pdf)).
+Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/transition.pdf)).
 
 ```typ
-#show heading.where(level: 1): h => render-transition(
-  h,
-  mapping: (section: 1, subsection: 2),
-  slide-func: my-slide-wrapper, // A function (fill, body) => content
-  transitions: (background: navy),
-  
-  // New layout control options (v0.1.2+)
-  content-padding: 2em,
-  content-align: center + horizon,
-  // Or use content-wrapper for total control
-)
+// Clean one-liner using global configuration
+#show heading: render-transition
 ```
 
 ## Demos
 
-Integration examples using different slide engines are available in the `examples/` directory:
+Integration examples are available in the `examples/` directory:
 
-- [**Presentate**](https://typst.app/universe/package/presentate/): [Miniframes + Progressive Outline & Transitions](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/presentate_integration.pdf))
-
-- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes only](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions only](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/polylux_progressive_ouline.pdf))
-
-- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes only](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/typslides_miniframes.pdf))
-
-- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Miniframes + Progressive Outline & Transitions](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/diatypst_integration.pdf))
-
-- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/markers.pdf))
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/presentate_integration.pdf))
+- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ)
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ)
+- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ)
+- **Standard Documents**: [Report with local roadmaps](examples/report.typ), [Customizable markers](examples/markers.typ)
 
 ## Acknowledgement 
 
-Thanks to the [presentate package author](https://github.com/pacaunt/typst-presentate) for his constructive feedback and valuable insights during the development of these tools.
+Thanks to the [presentate package author](https://github.com/pacaunt/typst-presentate) for his constructive feedback and insights.
 
 ## Changelog
 
 ### 0.1.3
-- **Title Management**: Added `max-length` (truncation) and manual **Short Titles** support (via `#metadata("...") <short>`) across all core components: `progressive-outline`, `render-miniframes`, and `render-transition`.
-- **Navigation Components**: Added `use-short-title` parameter (`false` by default) to enable manual short titles.
-- **Utility**: Added `resolve-body` and `find-short-titles` to the public API for advanced title management.
-- **Diatypst Integration**: Added comprehensive examples and documentation for integrating with the Diatypst presentation framework.
-- Resolve overlapping subsection titles in progressive outline by forcing width constraints.
+- **Global Configuration**: Introduced `navigator-config` to centralize mapping, colors, slide functions, and component defaults.
+- **Automation**: `render-transition`, `render-miniframes`, and `progressive-outline` now automatically resolve parameters from the global configuration.
+- **Visual Stability**: Standardized font weights and improved the "anti-jitter" mechanism in `progressive-outline` to prevent overlaps and jumping when titles change state.
+- **Title Management**: Full support for manual **Short Titles** (via `#metadata("...") <short>`) and automatic truncation across all components.
+- **Visibility & Contrast**: Improved default opacities and colors for inactive items to ensure readability on dark backgrounds.
+- **Robustness**: Enhanced dictionary merging and secured internal state access.
 
 ### 0.1.2
-- **`render-transition` improvements**:
-    - Added `content-padding` (default `(x: 10%)`) and `content-align` (default `top + left`) for better layout control.
-    - Added `content-wrapper` callback for complete customization of the transition slide layout.
-    - Added `headings` parameter to filter the structure used in the roadmap.
-- Added `format-heading` helper function to `lib.typ`.
+- **Transition improvements**: Added `content-padding`, `content-align`, and `content-wrapper` for total layout control.
+- Added `format-heading` and `headings` filtering.
 
 ### 0.1.1
-- Added `top-padding` option to `render-transition` for better control of roadmap vertical positioning.
+- Added `top-padding` to `render-transition`.
 
 ### 0.1.0
 - First release.
