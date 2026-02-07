@@ -53,12 +53,15 @@
   ps.slide(body)
 }
 
-#show heading: h => navigator.render-transition(
-  h,
-  mapping: mapping,
-  theme-colors: (primary: rgb("#1a5fb4"), accent: orange),
-  slide-func: empty-slide,
-)
+// Configuration globale du Navigator
+#navigator.navigator-config.update(c => {
+  c.mapping = mapping
+  c.theme-colors = (primary: rgb("#1a5fb4"), accent: orange)
+  c.slide-func = empty-slide
+  c
+})
+
+#show heading: navigator.render-transition
 
 // --- CONTENU DE LA PRÉSENTATION ---
 

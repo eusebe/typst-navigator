@@ -29,33 +29,33 @@
   slide(body)
 }
 
+// Configuration globale du Navigator
+#navigator.navigator-config.update(c => {
+  c.mapping = (section: 1, subsection: 2)
+  c.theme-colors = (primary: primary, accent: accent)
+  c.slide-func = polylux-slide-func
+  c
+})
+
 // --- TRANSITION LOGIC ---
-#show heading: h => {
-  if h.level > 2 { return h }
-  
-  navigator.render-transition(
-    h,
-    mapping: (section: 1, subsection: 2),
-    theme-colors: (primary: primary, accent: accent),
-    slide-func: polylux-slide-func,
-    base-text-size: base-size,
-    transitions: (
-      background: "theme",
-      style: (
-        active-color: white,
-        inactive-opacity: 0.4,
-      ),
-      // Section transition: Section title + list of all its Subsections
-      sections: (
-        visibility: (section: "current", subsection: "current-parent")
-      ),
-      // Subsection transition: Section title + Subsections list with highlight
-      subsections: (
-        visibility: (section: "current", subsection: "current-parent")
-      )
+#show heading: navigator.render-transition.with(
+  base-text-size: base-size,
+  transitions: (
+    background: "theme",
+    style: (
+      active-color: white,
+      inactive-opacity: 0.4,
+    ),
+    // Section transition: Section title + list of all its Subsections
+    sections: (
+      visibility: (section: "current", subsection: "current-parent")
+    ),
+    // Subsection transition: Section title + Subsections list with highlight
+    subsections: (
+      visibility: (section: "current", subsection: "current-parent")
     )
   )
-}
+)
 
 // --- PRESENTATION CONTENT ---
 

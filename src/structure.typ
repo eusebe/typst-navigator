@@ -8,6 +8,9 @@
   numbering-format: auto,
   use-short-title: false,
   max-length: none,
+  slide-func: none,
+  theme-colors: (primary: black, accent: orange),
+  transitions: (:),
 ))
 
 
@@ -151,16 +154,16 @@
   let fmt-h(h) = {
     if h == none { return none }
     let level = h.level
-    let current-max-length = if type(config.max-length) == dictionary {
+    let current-max-length = if type(config.at("max-length", default: none)) == dictionary {
       config.max-length.at("level-" + str(level), default: config.max-length.at(str(level), default: none))
     } else {
-      config.max-length
+      config.at("max-length", default: none)
     }
 
-    let current-use-short = if type(config.use-short-title) == dictionary {
+    let current-use-short = if type(config.at("use-short-title", default: true)) == dictionary {
       config.use-short-title.at("level-" + str(level), default: config.use-short-title.at(str(level), default: true))
     } else {
-      config.use-short-title
+      config.at("use-short-title", default: true)
     }
 
     let body = resolve-body(
@@ -182,16 +185,16 @@
   let final-fmt(h) = {
     if h == none { return none }
     let level = h.level
-    let current-max-length = if type(config.max-length) == dictionary {
+    let current-max-length = if type(config.at("max-length", default: none)) == dictionary {
       config.max-length.at("level-" + str(level), default: config.max-length.at(str(level), default: none))
     } else {
-      config.max-length
+      config.at("max-length", default: none)
     }
 
-    let current-use-short = if type(config.use-short-title) == dictionary {
+    let current-use-short = if type(config.at("use-short-title", default: true)) == dictionary {
       config.use-short-title.at("level-" + str(level), default: config.use-short-title.at(str(level), default: true))
     } else {
-      config.use-short-title
+      config.at("use-short-title", default: true)
     }
 
     let body = resolve-body(

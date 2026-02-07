@@ -20,6 +20,15 @@
   block(width: 100%, height: 100%, inset: (top: 20%), body)
 }
 
+// Configuration globale du Navigator
+#navigator.navigator-config.update(c => {
+  c.mapping = (section: 1, subsection: 2)
+  c.theme-colors = (primary: primary-color)
+  c.slide-func = transition-slide
+  c.show-heading-numbering = true
+  c
+})
+
 // 2. Wrapper de Slide
 #let slide(title: none, body) = {
   pagebreak(weak: true)
@@ -64,13 +73,8 @@
   }
 })
 
-// 4. Moteur de transition (Style Presentate)
-#show heading.where(level: 1).or(heading.where(level: 2)): it => navigator.render-transition(
-  it,
-  slide-func: transition-slide,
-  theme-colors: (primary: primary-color),
-  mapping: (section: 1, subsection: 2),
-  show-heading-numbering: true,
+// 4. Moteur de transition automatique
+#show heading.where(level: 1).or(heading.where(level: 2)): navigator.render-transition.with(
   top-padding: 20%,
   transitions: (
     sections: (

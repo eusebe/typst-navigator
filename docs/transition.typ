@@ -41,12 +41,32 @@
 #v(2em)
 
 = Introduction
-The `render-transition` function is designed to automatically generate "roadmap" or "summary" slides when the document structure changes (e.g., entering a new section). It is typically invoked within a `show heading` rule.
+The `render-transition` function is designed to automatically generate "roadmap" or "summary" slides when the document structure changes (e.g., entering a new section). 
+
+Previously, it required many manual parameters. Now, it is designed to be *configured globally* via `navigator-config`, allowing a clean one-line integration in your document.
+
+= Global Configuration
+Instead of passing parameters to every `render-transition` call, you can set them once at the beginning of your document:
+
+```typ
+#import "@preview/navigator:0.2.0": navigator-config, render-transition
+
+#navigator-config.update(c => {
+  c.mapping = (section: 1, subsection: 2)
+  c.slide-func = my-presentation-engine.slide
+  c.theme-colors = (primary: navy, accent: orange)
+  c
+})
+
+// Now you can use a simple one-liner:
+#show heading: render-transition
+```
 
 = Function documentation
 `render-transition(h, transitions: (:), mapping: (:), ...)`
 
 == Parameters Reference
+Most parameters default to `auto`, which means they will be resolved from the global `navigator-config` state.
 
 #table(
   columns: (1.5fr, 1fr, 3fr),
@@ -55,12 +75,12 @@ The `render-transition` function is designed to automatically generate "roadmap"
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Description*]),
   [`h`], [heading], [*Mandatory*. The heading object intercepted by the show rule.],
-  [`slide-func`], [function], [*Mandatory*. A callback `(fill: color, body: content) => content` used to create the slide. It should wrap the presentation engine's slide function (e.g., `polylux.slide`).],
-  [`transitions`], [dict], [Detailed configuration for the transition engine (see below).],
-  [`mapping`], [dict], [Maps heading levels to roles. Example: `(section: 1, subsection: 2)`.],
-  [`theme-colors`], [dict], [Dictionary containing `primary` and `accent` colors used for the transition slide style.],
-  [`show-heading-numbering`], [bool], [Whether to display heading numbers in the roadmap. Default: `true`.],
-  [`numbering-format`], [string | auto], [Typst numbering format string. If `auto`, uses the document's global heading numbering. Default: `auto`.],
+  [`slide-func`], [function | auto], [A callback `(fill: color, body: content) => content` used to create the slide. If `auto`, uses global config.],
+  [`transitions`], [dict], [Detailed configuration for the transition engine. Merged with global config transitions.],
+  [`mapping`], [dict], [Maps heading levels to roles. Example: `(section: 1, subsection: 2)`. Defaults to global config.],
+  [`theme-colors`], [dict | auto], [Dictionary containing `primary` and `accent` colors. Defaults to global config.],
+  [`show-heading-numbering`], [bool | auto], [Whether to display heading numbers in the roadmap. Defaults to global config.],
+  [`numbering-format`], [string | auto], [Typst numbering format string. Defaults to global config.],
   [`base-text-size`], [length | auto], [Base font size for the roadmap text. Default: `auto`.],
   [`base-text-font`], [string | auto], [Font family for the roadmap text. Default: `auto`.],
   [`top-padding`], [relative | length], [Vertical spacing added above the roadmap on the transition slide. Default: `40%`.],
@@ -99,11 +119,14 @@ For each transition role (`parts`, `sections`, `subsections`), you can define wh
 
 = Basic usage
 
+== Explicit mode (Legacy/Direct)
+You can still pass all parameters manually if you prefer total isolation for specific headings.
+
 #context {
   let h = query(heading.where(level: 1)).at(1) // Target "Function documentation"
   let heads = query(heading.where(level: 1).or(heading.where(level: 2))).slice(1, 6)
 
-  demo("Default Transition",
+  demo("Direct Parameter Passing",
   "render-transition(
   h,
   mapping: (section: 1, subsection: 2),
@@ -119,6 +142,16 @@ For each transition role (`parts`, `sections`, `subsections`), you can define wh
     top-padding: 20pt
   ))
 }
+
+== Minimalist mode (Recommended)
+By using `navigator-config.update(...)`, your show rule becomes extremely clean:
+
+```typ
+#show heading: render-transition
+```
+
+This is the recommended way to use Navigator in modern presentations.
+
 
 = Layout & Positioning Control
 

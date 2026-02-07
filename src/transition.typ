@@ -58,10 +58,10 @@
   h, 
   transitions: (:), 
   mapping: (:), 
-  show-heading-numbering: true,
+  show-heading-numbering: auto,
   numbering-format: auto,
-  theme-colors: (:),
-  slide-func: none, 
+  theme-colors: auto,
+  slide-func: auto, 
   base-text-size: auto,
   base-text-font: auto,
   top-padding: 40%,
@@ -72,35 +72,41 @@
   max-length: auto,
   use-short-title: auto,
 ) = {
-  if slide-func == none { panic("navigator: slide-func must be provided to render-transition") }
-  
   import "structure.typ": navigator-config
   let config = navigator-config.get()
 
+  let final-mapping = if mapping == (:) { config.at("mapping", default: (:)) } else { mapping }
+  let final-slide-func = if slide-func == auto { config.at("slide-func", default: none) } else { slide-func }
+  let final-theme-colors = if theme-colors == auto { config.at("theme-colors", default: (:)) } else { theme-colors }
+  
+  if final-slide-func == none { panic("navigator: slide-func must be provided either in navigator-config or as an argument to render-transition") }
+  
   let final-max-length = if max-length == auto { config.at("max-length", default: none) } else { max-length }
   let final-use-short = if use-short-title == auto { config.at("use-short-title", default: true) } else { use-short-title }
 
-  let options = merge-dicts(transitions, base: default-transitions)
+  // Double merge: user arg > config transitions > default-transitions
+  let options = merge-dicts(config.at("transitions", default: (:)), base: default-transitions)
+  options = merge-dicts(transitions, base: options)
   
-  let final-show-numbering = if "show-numbering" in transitions { options.show-numbering } else { show-heading-numbering }
-  let final-numbering-format = if "numbering-format" in transitions { options.numbering-format } else { numbering-format }
+  let final-show-numbering = if show-heading-numbering == auto { config.at("show-heading-numbering", default: true) } else { show-heading-numbering }
+  let final-numbering-format = if numbering-format == auto { config.at("numbering-format", default: auto) } else { numbering-format }
 
   if not options.enabled { return place(hide(h)) }
   if h.level > options.max-level { return place(hide(h)) }
   if options.filter != none and not (options.filter)(h) { return place(hide(h)) }
 
   let role = none
-  if is-role(mapping, h.level, "part") { role = "parts" }
-  else if is-role(mapping, h.level, "section") { role = "sections" }
-  else if is-role(mapping, h.level, "subsection") { role = "subsections" }
+  if is-role(final-mapping, h.level, "part") { role = "parts" }
+  else if is-role(final-mapping, h.level, "section") { role = "sections" }
+  else if is-role(final-mapping, h.level, "subsection") { role = "subsections" }
 
   if role == none { return place(hide(h)) }
   let role-config = options.at(role)
   if not role-config.enabled { return place(hide(h)) }
 
   let final-bg-option = if role-config.background != auto { role-config.background } else { options.background }
-  let bg-color = resolve-background(final-bg-option, theme-colors)
-  let final-active-color = resolve-active-color(options.style, theme-colors, final-bg-option)
+  let bg-color = resolve-background(final-bg-option, final-theme-colors)
+  let final-active-color = resolve-active-color(options.style, final-theme-colors, final-bg-option)
 
   let common-active = (weight: options.style.active-weight, fill: final-active-color, size: 1.2em)
   let inactive-style = (opacity: options.style.inactive-opacity, size: 1.2em)
@@ -108,15 +114,64 @@
 
   let text-styles = (
     level-1: (active: common-active, inactive: inactive-style, completed: completed-style),
-    level-2: (active: common-active, inactive: inactive-style, completed: completed-style),
-    level-3: (active: common-active, inactive: inactive-style, completed: completed-style),
+    level-2: (active: common-active, inactive: inactive-style, completed-style: completed-style),
+    level-3: (active: common-active, inactive: inactive-style, completed-style: completed-style),
   )
 
   let vis = role-config.visibility
   let level-modes = (level-1-mode: "none", level-2-mode: "none", level-3-mode: "none")
-  if "part" in mapping { level-modes.insert("level-" + str(mapping.part) + "-mode", vis.at("part", default: "none")) }
-  if "section" in mapping { level-modes.insert("level-" + str(mapping.section) + "-mode", vis.at("section", default: "none")) }
-  if "subsection" in mapping { level-modes.insert("level-" + str(mapping.subsection) + "-mode", vis.at("subsection", default: "none")) }
+  if "part" in final-mapping { level-modes.insert("level-" + str(final-mapping.part) + "-mode", vis.at("part", default: "none")) }
+  if "section" in final-mapping { level-modes.insert("level-" + str(final-mapping.section) + "-mode", vis.at("section", default: "none")) }
+  if "subsection" in final-mapping { level-modes.insert("level-" + str(final-mapping.subsection) + "-mode", vis.at("subsection", default: "none")) }
+
+  // Calculate the scale factor applied by Typst to headings by default
+  let scale = if h.level == 1 { 1.4 } else if h.level == 2 { 1.2 } else { 1.0 }
+
+  context {
+    // 1. Apply the reset to the document's base font size and weight
+    set text(size: 1em / scale, weight: "regular")
+    // 2. Apply explicit overrides if provided
+    if base-text-size != auto { set text(size: base-text-size) }
+    if base-text-font != auto { set text(font: base-text-font) }
+    
+    // 3. Generate the roadmap component
+    let roadmap = progressive-outline(
+      ..level-modes,
+      show-numbering: final-show-numbering,
+      numbering-format: final-numbering-format,
+      target-location: h.location(),
+      text-styles: text-styles,
+      filter: options.filter,
+      headings: headings,
+      max-length: final-max-length,
+      use-short-title: final-use-short,
+    )
+
+    final-slide-func(fill: bg-color, {
+      if content-wrapper != none {
+         // Expert mode: user takes full control
+         // We pass h and the active state to allow building custom headers/footers
+         import "structure.typ": get-active-headings
+         let active = get-active-headings(h.location())
+         content-wrapper(roadmap, h, active)
+      } else {
+        // Standard configurable mode
+        let align-val = if content-align == auto { top + left } else { content-align }
+        let pad-val = if content-padding == auto { (x: 10%) } else { content-padding }
+        
+        set align(align-val)
+        v(top-padding)
+        if type(pad-val) == dictionary {
+          pad(..pad-val, roadmap)
+        } else {
+          pad(pad-val, roadmap)
+        }
+      }
+      
+      place(hide(h)) 
+    })
+  }
+}
 
   // Calculate the scale factor applied by Typst to headings by default
   let scale = if h.level == 1 { 1.4 } else if h.level == 2 { 1.2 } else { 1.0 }
