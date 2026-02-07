@@ -75,20 +75,20 @@ Most parameters default to `auto`, which means they will be resolved from the gl
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Description*]),
   [`h`], [heading], [*Mandatory*. The heading object intercepted by the show rule.],
-  [`slide-func`], [function | auto], [A callback `(fill: color, body: content) => content` used to create the slide. If `auto`, uses global config.],
-  [`transitions`], [dict], [Detailed configuration for the transition engine. Merged with global config transitions.],
-  [`mapping`], [dict], [Maps heading levels to roles. Example: `(section: 1, subsection: 2)`. Defaults to global config.],
-  [`theme-colors`], [dict | auto], [Dictionary containing `primary` and `accent` colors. Defaults to global config.],
-  [`show-heading-numbering`], [bool | auto], [Whether to display heading numbers in the roadmap. Defaults to global config.],
-  [`numbering-format`], [string | auto], [Typst numbering format string. Defaults to global config.],
+  [`slide-func`], [function | auto], [A callback `(fill: color, body: content) => content` used to create the slide. If `auto`, resolved from global config.],
+  [`transitions`], [dict], [Detailed configuration for the transition engine. These settings are merged with the global config defaults.],
+  [`mapping`], [dict | auto], [Maps heading levels to roles (e.g., `(section: 1, subsection: 2)`). If `auto`, resolved from global config.],
+  [`theme-colors`], [dict | auto], [Dictionary containing `primary` and `accent` colors. If `auto`, resolved from global config.],
+  [`show-heading-numbering`], [bool | auto], [Whether to display heading numbers in the roadmap. If `auto`, resolved from global config.],
+  [`numbering-format`], [string | auto], [Numbering format (e.g., `"1.1"`). If `auto`, resolved from global config.],
   [`base-text-size`], [length | auto], [Base font size for the roadmap text. Default: `auto`.],
   [`base-text-font`], [string | auto], [Font family for the roadmap text. Default: `auto`.],
-  [`top-padding`], [relative | length], [Vertical spacing added above the roadmap on the transition slide. Default: `40%`.],
-  [`content-padding`], [length | dict], [Padding around the roadmap content. Default: `(x: 10%)`.],
-  [`content-align`], [alignment], [Alignment of the roadmap content. Default: `top + left`.],
-  [`content-wrapper`], [function], [A callback `(roadmap, heading, active-state) => content` to completely override the layout logic.],
-  [`max-length`], [int | dict | auto], [Maximum length of titles before truncation. If `auto`, uses global configuration. Default: `auto`.],
-  [`use-short-title`], [bool | dict | auto], [Whether to use short titles. If `auto`, uses global configuration. Default: `auto`.],
+  [`top-padding`], [relative | length], [Vertical spacing added above the roadmap in *Standard Mode*. Default: `40%`.],
+  [`content-padding`], [length | dict], [Padding around the roadmap content in *Standard Mode*. Default: `(x: 10%)`.],
+  [`content-align`], [alignment], [Alignment of the roadmap content in *Standard Mode*. Default: `top + left`.],
+  [`content-wrapper`], [function], [A callback `(roadmap, heading, active-state) => content` to completely override the slide layout (*Expert Mode*).],
+  [`max-length`], [int | dict | auto], [Maximum length of titles before truncation. If `auto`, resolved from global config.],
+  [`use-short-title`], [bool | dict | auto], [Whether to use short titles. If `auto`, resolved from global config.],
 )
 
 == The `transitions` dictionary
@@ -109,13 +109,19 @@ This parameter allows fine-tuning the behavior and appearance of transition slid
 )
 
 === Visibility Logic
-For each transition role (`parts`, `sections`, `subsections`), you can define which hierarchy levels are visible using the `visibility` key:
-- `"all"`: Show all headings at this level.
-- `"current"`: Only show the active heading at this level.
-- `"current-parent"`: Show siblings of the active heading.
-- `"none"`: Hide this level.
+For each transition role (`parts`, `sections`, `subsections`), you can define which hierarchy levels are visible using the `visibility` key. The behavior depends on the active heading:
 
-#v(2em)
+- `"all"`: Show all headings at this level throughout the document.
+- `"current"`: Only show the heading that is currently active (or the parent of the active one).
+- `"current-parent"`: Show all siblings of the active heading (i.e., all headings at this level that share the same parent).
+- `"none"`: Completely hide this level from the roadmap.
+
+== Customizing the Layout
+You have two ways to control the roadmap appearance on the slide:
+
+1. *Standard Mode*: Use `top-padding`, `content-padding`, and `content-align` to position the roadmap. This is quick and works for most cases.
+2. *Expert Mode*: Use `content-wrapper` to take full control. Note that if `content-wrapper` is provided, the standard padding and alignment parameters are ignored.
+
 
 = Basic usage
 
@@ -202,13 +208,13 @@ In this example, we place the current section title on the left and the roadmap 
   grid(
     columns: (1fr, 1.5fr),
     align(center + horizon, 
-      text(size: 1.5em, weight: 'bold', format-heading(h))
+      text(size: 1.5em, weight: \"bold\", format-heading(h))
     ),
     align(left + horizon, roadmap)
   )
 },
 transitions: (
-  sections: (visibility: (section: 'none', subsection: 'all'))
+  sections: (visibility: (section: \"none\", subsection: \"all\"))
 )",
   render-transition(
     h,
