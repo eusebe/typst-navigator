@@ -18,6 +18,36 @@
     inactive-color: gray,
     style: "grid",
   ),
+  progressive-outline: (
+    level-1-mode: "all",
+    level-2-mode: "current-parent",
+    level-3-mode: "none",
+    text-styles: (
+      level-1: (
+        active: (fill: rgb("#000000"), weight: "bold"), 
+        completed: (fill: rgb("#888888"), weight: "bold"),
+        inactive: (fill: rgb("#000000"), weight: "bold")
+      ),
+      level-2: (
+        active: (fill: rgb("#000000"), weight: "bold"), 
+        completed: (fill: rgb("#aaaaaa"), weight: "regular"),
+        inactive: (fill: rgb("#333333"), weight: "regular")
+      ),
+      level-3: (
+        active: (fill: rgb("#000000"), weight: "bold"), 
+        completed: (fill: rgb("#cccccc"), weight: "regular"),
+        inactive: (fill: rgb("#555555"), weight: "regular")
+      ),
+    ),
+    spacing: (
+      indent-1: 0pt, indent-2: 1.5em, indent-3: 3em,
+      v-between-1-1: 1em, v-between-1-2: 0.6em, v-between-2-1: 1em,
+      v-between-2-2: 0.5em, v-between-2-3: 0.4em, v-between-3-3: 0.3em, 
+      v-between-3-2: 0.8em, v-between-3-1: 1.2em,
+      v-after-block: 0.5em,
+      h-spacing: 0.5em,
+    ),
+  ),
 ))
 
 

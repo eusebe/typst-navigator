@@ -1,5 +1,5 @@
-#import "structure.typ": get-active-headings, find-short-titles
-#import "utils.typ": extract-text, truncate-text, resolve-body
+#import "structure.typ": get-active-headings, find-short-titles, navigator-config
+#import "utils.typ": extract-text, truncate-text, resolve-body, merge-dicts
 
 /// Helper function to resolve styles with opacity/inheritance logic
 #let resolve-state-style(active-style, target-style) = {
@@ -93,37 +93,14 @@
 }
 
 #let progressive-outline(
-  level-1-mode: "all", 
-  level-2-mode: "current-parent",
-  level-3-mode: "none",
+  level-1-mode: auto, 
+  level-2-mode: auto,
+  level-3-mode: auto,
   layout: "vertical",
   separator: none,
-  text-styles: (
-    level-1: (
-      active: (fill: rgb("#000000"), weight: "bold"), 
-      completed: (fill: rgb("#888888"), weight: "bold"),
-      inactive: (fill: rgb("#000000"), weight: "bold")
-    ),
-    level-2: (
-      active: (fill: rgb("#000000"), weight: "bold"), 
-      completed: (fill: rgb("#aaaaaa"), weight: "regular"),
-      inactive: (fill: rgb("#333333"), weight: "regular")
-    ),
-    level-3: (
-      active: (fill: rgb("#000000"), weight: "bold"), 
-      completed: (fill: rgb("#cccccc"), weight: "regular"),
-      inactive: (fill: rgb("#555555"), weight: "regular")
-    ),
-  ),
-  spacing: (
-    indent-1: 0pt, indent-2: 1.5em, indent-3: 3em,
-    v-between-1-1: 1em, v-between-1-2: 0.6em, v-between-2-1: 1em,
-    v-between-2-2: 0.5em, v-between-2-3: 0.4em, v-between-3-3: 0.3em, 
-    v-between-3-2: 0.8em, v-between-3-1: 1.2em,
-    v-after-block: 0.5em,
-    h-spacing: 0.5em,
-  ),
-  show-numbering: false,
+  text-styles: auto,
+  spacing: auto,
+  show-numbering: auto,
   numbering-format: auto,
   target-location: auto,
   match-page-only: false,
@@ -131,10 +108,26 @@
   headings: auto,
   clickable: true,
   marker: none,
-  max-length: none,
-  use-short-title: false,
+  max-length: auto,
+  use-short-title: auto,
 ) = {
     context {
+      let config = navigator-config.get()
+      let p-config = config.at("progressive-outline", default: (:))
+
+      let final-level-1-mode = if level-1-mode == auto { p-config.at("level-1-mode", default: "all") } else { level-1-mode }
+      let final-level-2-mode = if level-2-mode == auto { p-config.at("level-2-mode", default: "current-parent") } else { level-2-mode }
+      let final-level-3-mode = if level-3-mode == auto { p-config.at("level-3-mode", default: "none") } else { level-3-mode }
+
+      let final-text-styles = merge-dicts(if text-styles == auto { (:) } else { text-styles }, base: p-config.at("text-styles", default: (:)))
+      let final-spacing = merge-dicts(if spacing == auto { (:) } else { spacing }, base: p-config.at("spacing", default: (:)))
+
+      let final-show-numbering = if show-numbering == auto { config.at("show-heading-numbering", default: false) } else { show-numbering }
+      let final-numbering-format = if numbering-format == auto { config.at("numbering-format", default: auto) } else { numbering-format }
+
+      let final-max-length = if max-length == auto { config.at("max-length", default: none) } else { max-length }
+      let final-use-short = if use-short-title == auto { config.at("use-short-title", default: true) } else { use-short-title }
+
       let loc = if target-location == auto { here() } else { target-location }
       let all-headings = if headings == auto { query(heading.where(outlined: true)) } else { headings }
       all-headings = all-headings.sorted(key: h => (h.location().page(), if h.location().position() != none { h.location().position().y } else { 0pt }))
@@ -188,35 +181,35 @@
         else if active-h1 != none {
           if h-loc.page() < active-h1.location().page() or (h-loc.page() == active-h1.location().page() and h-loc.position() != none and active-h1.location().position() != none and h-loc.position().y < active-h1.location().position().y) { is-completed = true }
         }
-        if level-1-mode == "all" { should-render = true }
-        else if level-1-mode == "current" and is-active { should-render = true }
+        if final-level-1-mode == "all" { should-render = true }
+        else if final-level-1-mode == "current" and is-active { should-render = true }
       } else if h.level == 2 {
         if active-h2 != none and h-loc == active-h2.location() { is-active = true }
         else if active-h2 != none {
           if h-loc.page() < active-h2.location().page() or (h-loc.page() == active-h2.location().page() and h-loc.position() != none and active-h2.location().position() != none and h-loc.position().y < active-h2.location().position().y) { is-completed = true }
         }
-        if level-2-mode == "all" { should-render = true }
-        else if level-2-mode == "current-parent" {
+        if final-level-2-mode == "all" { should-render = true }
+        else if final-level-2-mode == "current-parent" {
            if is-child-of-active-h1 { should-render = true }
            else if active-h1 == none and current-h1 == none { should-render = true }
         }
-        else if level-2-mode == "current" and is-active { should-render = true }
+        else if final-level-2-mode == "current" and is-active { should-render = true }
       } else if h.level == 3 {
         if active-h3 != none and h-loc == active-h3.location() { is-active = true }
         else if active-h3 != none {
           if h-loc.page() < active-h3.location().page() or (h-loc.page() == active-h3.location().page() and h-loc.position() != none and active-h3.location().position() != none and h-loc.position().y < active-h3.location().position().y) { is-completed = true }
         }
-        if level-3-mode == "all" { should-render = true }
-        else if level-3-mode == "current-parent" {
+        if final-level-3-mode == "all" { should-render = true }
+        else if final-level-3-mode == "current-parent" {
            if is-child-of-active-h2 { should-render = true }
            else if active-h2 == none and is-child-of-active-h1 { should-render = true }
            else if active-h2 == none and active-h1 == none and current-h1 == none and current-h2 == none { should-render = true }
         }
-        else if level-3-mode == "current" and is-active { should-render = true }
+        else if final-level-3-mode == "current" and is-active { should-render = true }
       }
 
       if should-render {
-        let styles-lvl = text-styles.at("level-" + str(h.level), default: (:))
+        let styles-lvl = final-text-styles.at("level-" + str(h.level), default: (:))
         let raw-active = styles-lvl.at("active", default: (:))
         let raw-inactive = styles-lvl.at("inactive", default: (:))
         let raw-completed = styles-lvl.at("completed", default: none)
@@ -228,28 +221,28 @@
         let m-active = resolve-marker(marker, "active", h.level)
         let m-inactive = resolve-marker(marker, "inactive", h.level)
         let m-completed = resolve-marker(marker, "completed", h.level)
-        let m-spacing = (gap: spacing.at("marker-gap", default: 0.5em), width: spacing.at("marker-width", default: auto))
+        let m-spacing = (gap: final-spacing.at("marker-gap", default: 0.5em), width: final-spacing.at("marker-width", default: auto))
         
         let h-counter = counter(heading).at(h-loc)
         let trimmed-idx = if h-counter.len() >= h.level { h-counter.slice(0, h.level) } else { h-counter }
 
         // Smart numbering resolution
-        let final-fmt = if show-numbering {
-          let fmt = if numbering-format == auto { h.at("numbering", default: none) } else { numbering-format }
+        let final-num-fmt = if final-show-numbering {
+          let fmt = if final-numbering-format == auto { h.at("numbering", default: none) } else { final-numbering-format }
           // Only show numbering if a format exists AND the counter has been incremented (avoiding "0")
           if fmt != none and trimmed-idx.any(v => v > 0) { fmt } else { none }
         } else { none }
 
-        let current-max-length = if type(max-length) == dictionary {
-          max-length.at("level-" + str(h.level), default: max-length.at(str(h.level), default: none))
+        let current-max-length = if type(final-max-length) == dictionary {
+          final-max-length.at("level-" + str(h.level), default: final-max-length.at(str(h.level), default: none))
         } else {
-          max-length
+          final-max-length
         }
 
-        let current-use-short = if type(use-short-title) == dictionary {
-          use-short-title.at("level-" + str(h.level), default: use-short-title.at(str(h.level), default: true))
+        let current-use-short = if type(final-use-short) == dictionary {
+          final-use-short.at("level-" + str(h.level), default: final-use-short.at(str(h.level), default: true))
         } else {
-          use-short-title
+          final-use-short
         }
 
         let display-body = resolve-body(
@@ -262,7 +255,7 @@
         let item = render-item(
           display-body, is-active: is-active, is-completed: is-completed,
           text-style: s-inactive, active-text-style: s-active, completed-text-style: s-completed,
-          numbering-format: final-fmt, index: trimmed-idx,
+          numbering-format: final-num-fmt, index: trimmed-idx,
           clickable: clickable, dest: h-loc,
           markers: (active: m-active, inactive: m-inactive, completed: m-completed),
           marker-spacing: m-spacing,
@@ -278,9 +271,9 @@
           let spacing-top = 0pt
           if items-to-render.len() > 0 {
             let key = "v-between-" + str(last-level) + "-" + str(h.level)
-            spacing-top = spacing.at(key, default: spacing.at("v-after-block", default: 0.5em))
+            spacing-top = final-spacing.at(key, default: final-spacing.at("v-after-block", default: 0.5em))
           }
-          let indent = spacing.at("indent-" + str(h.level), default: 0pt)
+          let indent = final-spacing.at("indent-" + str(h.level), default: 0pt)
           
           items-to-render.push(block(
             width: 100%,
@@ -293,7 +286,7 @@
     }
     if items-to-render.len() > 0 { 
       if layout == "horizontal" {
-        stack(dir: ltr, spacing: spacing.at("h-spacing", default: 0.5em), ..items-to-render)
+        stack(dir: ltr, spacing: final-spacing.at("h-spacing", default: 0.5em), ..items-to-render)
       } else {
         grid(columns: (1fr,), ..items-to-render) 
       }

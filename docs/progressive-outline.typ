@@ -27,8 +27,36 @@
 ]
 #v(2em)
 
+= Introduction
+The `progressive-outline` function is a versatile component for building roadmaps, sidebars, and breadcrumbs. It displays a hierarchical view of the document structure that evolves as the reader progresses.
+
+Previously, it required manual styling for every call. Now, it is designed to be *configured globally* via `navigator-config`, ensuring consistency across your document.
+
+= Global Configuration
+You can define the default appearance and behavior of all outlines at the beginning of your document:
+
+```typ
+#import "@preview/navigator:0.2.0": navigator-config, progressive-outline
+
+#navigator-config.update(c => {
+  c.progressive-outline = (
+    level-1-mode: "all",
+    level-2-mode: "current-parent",
+    text-styles: (
+      level-1: (active: (weight: "bold", fill: navy)),
+      level-2: (active: (weight: "regular", fill: gray))
+    ),
+    spacing: (indent-2: 2em)
+  )
+  c
+})
+
+// Use it with zero arguments to respect global config:
+#progressive-outline()
+```
+
 = Function documentation
-This section details all the parameters available for the `progressive-outline` function.
+This section details all the parameters available for the `progressive-outline` function. Most parameters default to `auto`, which means they will be resolved from the global `navigator-config` state.
 
 #table(
   columns: (1.5fr, 1fr, 3fr),
@@ -36,19 +64,19 @@ This section details all the parameters available for the `progressive-outline` 
   align: horizon,
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Effect & Expected Values*]),
-  [`level-X-mode`], [string], [Defines the visibility of level X (1, 2, or 3). \ Values: `"all"`, `"current"`, `"current-parent"`, `"none"`.],
+  [`level-X-mode`], [string | auto], [Defines the visibility of level X (1, 2, or 3). \ Values: `"all"`, `"current"`, `"current-parent"`, `"none"`. Defaults to global config.],
   [`layout`], [string], [Switch between `"vertical"` (default) and `"horizontal"` rendering.],
   [`separator`], [content | str], [Separator displayed between items in horizontal layout. Ignored in vertical mode.],
-  [`text-styles`], [dict], [Styles passed to `#text` (fill, weight, etc.). You can also use a float (e.g., `0.5`) as a shortcut to inherit the active style with that opacity.],
-  [`spacing`], [dict], [Controls vertical space (`v-between-X-Y`), horizontal indentation (`indent-X`) and horizontal gap (`h-spacing`).],
-  [`show-numbering`], [bool], [Enables or disables the display of heading numbering.],
-  [`numbering-format`], [str | func | auto], [Typst numbering format (e.g., `"1.1"`) or custom function. If `auto`, respects global heading settings. Default: `auto`.],
-  [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page, regardless of its Y position. Useful for sidebars.],
+  [`text-styles`], [dict | auto], [Styles passed to `#text`. Merged with global config. You can use a float (e.g., `0.5`) as a shortcut for opacity inheritance.],
+  [`spacing`], [dict | auto], [Controls spacing (`v-between-X-Y`, `indent-X`, `h-spacing`). Merged with global config.],
+  [`show-numbering`], [bool | auto], [Whether to display heading numbering. Defaults to global config.],
+  [`numbering-format`], [str | func | auto], [Typst numbering format or custom function. If `auto`, resolved from global config or heading settings.],
+  [`match-page-only`], [bool], [If true, considers a heading active if it is on the same page (useful for sidebars). Default: `false`.],
   [`filter`], [func], [A callback function `(heading) => bool` to programmatically include or exclude headings.],
   [`marker`], [content | dict | func], [Content displayed before the item. Can be static, a dict by state, or a function `(state, level) => content`.],
-  [`clickable`], [bool], [Enables clickable links on headings. Defaults to `true`.],
-  [`max-length`], [int | dict], [Maximum length of titles before truncation. Ex: `20` or `(level-1: 15, level-2: 30)`. Defaults to `none`.],
-  [`use-short-title`], [bool | dict], [If true, uses short titles defined via `#metadata("...") <short>` immediately following headings. Default: `false`.],
+  [`clickable`], [bool], [Enables clickable links on headings. Default: `true`.],
+  [`max-length`], [int | dict | auto], [Maximum length of titles before truncation. Defaults to global config.],
+  [`use-short-title`], [bool | dict | auto], [Whether to use manual short titles. Defaults to global config.],
 )
 
 #v(2em)
