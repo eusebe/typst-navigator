@@ -1,14 +1,15 @@
 /// Merges two dictionaries recursively.
 #let merge-dicts(dict-a, base: (:)) = {
+  let res = base
   for (key, val) in dict-a {
-    if type(val) == dictionary and key in base.keys() {
-      base.insert(key, merge-dicts(dict-a.at(key), base: base.at(key)))
+    if type(val) == dictionary and type(res.at(key, default: none)) == dictionary {
+      res.insert(key, merge-dicts(val, base: res.at(key)))
     }
     else {
-      base.insert(key, val)
+      res.insert(key, val)
     }
   }
-  return base
+  return res
 }
 
 /// Extracts plain text from Typst content.

@@ -26,8 +26,8 @@
     background: auto,
   ),
   style: (
-    inactive-opacity: 0.3,
-    completed-opacity: 0.6,
+    inactive-opacity: 0.4,
+    completed-opacity: 0.7,
     active-weight: "bold",
     active-color: none, 
   ),
@@ -109,8 +109,8 @@
   let final-active-color = resolve-active-color(options.style, final-theme-colors, final-bg-option)
 
   let common-active = (weight: options.style.active-weight, fill: final-active-color, size: 1.2em)
-  let inactive-style = (opacity: options.style.inactive-opacity, size: 1.2em)
-  let completed-style = (opacity: options.style.completed-opacity, size: 1.2em)
+  let inactive-style = (fill: final-active-color, opacity: options.style.inactive-opacity, size: 1.2em)
+  let completed-style = (fill: final-active-color, opacity: options.style.completed-opacity, size: 1.2em)
 
   let text-styles = (
     level-1: (active: common-active, inactive: inactive-style, completed: completed-style),

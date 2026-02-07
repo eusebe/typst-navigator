@@ -25,18 +25,18 @@
     text-styles: (
       level-1: (
         active: (fill: rgb("#000000"), weight: "bold"), 
-        completed: (fill: rgb("#888888"), weight: "bold"),
-        inactive: (fill: rgb("#000000"), weight: "bold")
+        completed: (fill: rgb("#777777"), weight: "bold"),
+        inactive: (fill: rgb("#999999"), weight: "bold")
       ),
       level-2: (
         active: (fill: rgb("#000000"), weight: "bold"), 
-        completed: (fill: rgb("#aaaaaa"), weight: "regular"),
-        inactive: (fill: rgb("#333333"), weight: "regular")
+        completed: (fill: rgb("#888888"), weight: "regular"),
+        inactive: (fill: rgb("#aaaaaa"), weight: "regular")
       ),
       level-3: (
         active: (fill: rgb("#000000"), weight: "bold"), 
-        completed: (fill: rgb("#cccccc"), weight: "regular"),
-        inactive: (fill: rgb("#555555"), weight: "regular")
+        completed: (fill: rgb("#999999"), weight: "regular"),
+        inactive: (fill: rgb("#bbbbbb"), weight: "regular")
       ),
     ),
     spacing: (
