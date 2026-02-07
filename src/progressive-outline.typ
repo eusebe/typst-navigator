@@ -87,7 +87,15 @@
     else { content-normal }
 
   block(width: width, {
-    hide(content-active)
+    // Reserve space for all potential states to prevent jitter and overlaps
+    // even if 'completed' or 'inactive' states are larger than 'active'
+    hide(grid(
+      columns: 1,
+      rows: (auto, 0pt, 0pt),
+      content-normal,
+      content-active,
+      content-completed
+    ))
     place(top + left, block(width: width, target-content))
   })
 }
