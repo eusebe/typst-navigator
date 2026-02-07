@@ -92,6 +92,37 @@
   })
 }
 
+#let default-outline-config = (
+  level-1-mode: "all",
+  level-2-mode: "current-parent",
+  level-3-mode: "none",
+  text-styles: (
+    level-1: (
+      active: (fill: rgb("#000000"), weight: "bold"), 
+      completed: (fill: rgb("#777777"), weight: "bold"),
+      inactive: (fill: rgb("#999999"), weight: "bold")
+    ),
+    level-2: (
+      active: (fill: rgb("#000000"), weight: "regular"), 
+      completed: (fill: rgb("#888888"), weight: "regular"),
+      inactive: (fill: rgb("#aaaaaa"), weight: "regular")
+    ),
+    level-3: (
+      active: (fill: rgb("#000000"), weight: "regular"), 
+      completed: (fill: rgb("#999999"), weight: "regular"),
+      inactive: (fill: rgb("#bbbbbb"), weight: "regular")
+    ),
+  ),
+  spacing: (
+    indent-1: 0pt, indent-2: 1.5em, indent-3: 3em,
+    v-between-1-1: 1em, v-between-1-2: 0.6em, v-between-2-1: 1em,
+    v-between-2-2: 0.5em, v-between-2-3: 0.4em, v-between-3-3: 0.3em, 
+    v-between-3-2: 0.8em, v-between-3-1: 1.2em,
+    v-after-block: 0.5em,
+    h-spacing: 0.5em,
+  ),
+)
+
 #let progressive-outline(
   level-1-mode: auto, 
   level-2-mode: auto,
@@ -113,14 +144,16 @@
 ) = {
     context {
       let config = navigator-config.get()
-      let p-config = config.at("progressive-outline", default: (:))
+      
+      // Triple merge: Hardcoded Defaults < Global Config < Function Arguments
+      let p-config = merge-dicts(config.at("progressive-outline", default: (:)), base: default-outline-config)
 
-      let final-level-1-mode = if level-1-mode == auto { p-config.at("level-1-mode", default: "all") } else { level-1-mode }
-      let final-level-2-mode = if level-2-mode == auto { p-config.at("level-2-mode", default: "current-parent") } else { level-2-mode }
-      let final-level-3-mode = if level-3-mode == auto { p-config.at("level-3-mode", default: "none") } else { level-3-mode }
+      let final-level-1-mode = if level-1-mode == auto { p-config.at("level-1-mode") } else { level-1-mode }
+      let final-level-2-mode = if level-2-mode == auto { p-config.at("level-2-mode") } else { level-2-mode }
+      let final-level-3-mode = if level-3-mode == auto { p-config.at("level-3-mode") } else { level-3-mode }
 
-      let final-text-styles = merge-dicts(if text-styles == auto { (:) } else { text-styles }, base: p-config.at("text-styles", default: (:)))
-      let final-spacing = merge-dicts(if spacing == auto { (:) } else { spacing }, base: p-config.at("spacing", default: (:)))
+      let final-text-styles = merge-dicts(if text-styles == auto { (:) } else { text-styles }, base: p-config.at("text-styles"))
+      let final-spacing = merge-dicts(if spacing == auto { (:) } else { spacing }, base: p-config.at("spacing"))
 
       let final-show-numbering = if show-numbering == auto { config.at("show-heading-numbering", default: false) } else { show-numbering }
       let final-numbering-format = if numbering-format == auto { config.at("numbering-format", default: auto) } else { numbering-format }
