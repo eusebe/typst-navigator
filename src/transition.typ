@@ -109,13 +109,13 @@
   let final-active-color = resolve-active-color(options.style, final-theme-colors, final-bg-option)
 
   let common-active = (weight: options.style.active-weight, fill: final-active-color, size: 1.2em)
-  let inactive-style = (fill: final-active-color, opacity: options.style.inactive-opacity, size: 1.2em)
-  let completed-style = (fill: final-active-color, opacity: options.style.completed-opacity, size: 1.2em)
+  let inactive-style = (weight: options.style.active-weight, fill: final-active-color, opacity: options.style.inactive-opacity, size: 1.2em)
+  let completed-style = (weight: options.style.active-weight, fill: final-active-color, opacity: options.style.completed-opacity, size: 1.2em)
 
   let text-styles = (
     level-1: (active: common-active, inactive: inactive-style, completed: completed-style),
-    level-2: (active: common-active, inactive: inactive-style, completed-style: completed-style),
-    level-3: (active: common-active, inactive: inactive-style, completed-style: completed-style),
+    level-2: (active: common-active, inactive: inactive-style, completed: completed-style),
+    level-3: (active: common-active, inactive: inactive-style, completed: completed-style),
   )
 
   let vis = role-config.visibility

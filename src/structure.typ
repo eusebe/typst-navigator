@@ -29,12 +29,12 @@
         inactive: (fill: rgb("#999999"), weight: "bold")
       ),
       level-2: (
-        active: (fill: rgb("#000000"), weight: "bold"), 
+        active: (fill: rgb("#000000"), weight: "regular"), 
         completed: (fill: rgb("#888888"), weight: "regular"),
         inactive: (fill: rgb("#aaaaaa"), weight: "regular")
       ),
       level-3: (
-        active: (fill: rgb("#000000"), weight: "bold"), 
+        active: (fill: rgb("#000000"), weight: "regular"), 
         completed: (fill: rgb("#999999"), weight: "regular"),
         inactive: (fill: rgb("#bbbbbb"), weight: "regular")
       ),
