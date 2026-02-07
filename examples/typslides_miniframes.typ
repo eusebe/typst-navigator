@@ -45,14 +45,8 @@
 
 #set page(footer: context {
   if show-nav-bar.get() {
-    let selector = metadata.where(value: (t: "ContentSlide"))
-    let struct = navigator.get-structure(slide-selector: selector)
-    let current = navigator.get-current-logical-slide-number(slide-selector: selector)
-    
     block(width: 100%, inset: (bottom: 1em, x: 2em))[
       #navigator.render-miniframes(
-        struct, 
-        current, 
         fill: none, 
         text-color: black,
         active-color: primary,

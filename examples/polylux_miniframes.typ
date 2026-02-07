@@ -34,14 +34,7 @@
   
   // 3. Setup the page header with the miniframes bar
   set page(header: context {
-    // We use slide-selector to ensure only "ContentSlide" pages get a dot
-    let selector = metadata.where(value: (t: "ContentSlide"))
-    let struct = get-structure(slide-selector: selector)
-    let current = get-current-logical-slide-number(slide-selector: selector)
-    
     render-miniframes(
-      struct, 
-      current, 
       fill: navy, 
       active-color: white,
       inactive-color: white.transparentize(60%),

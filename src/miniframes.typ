@@ -202,192 +202,218 @@
 }
 
 #let render-miniframes(
-  structure,
-  current-slide-num,
-  fill: black,
-  text-color: white,
-  text-size: 10pt,
-  font: none,
-  active-color: white,
-  inactive-color: gray,
-  marker-shape: "circle",
-  marker-size: 4pt,
-  style: "grid", 
-  align-mode: "left",
-  dots-align: "left",
-  show-level1-titles: true,
-  show-level2-titles: true,
-  show-numbering: false,
-  numbering-format: "1.1",
-  gap: 1.5em,
-  line-spacing: 4pt,
-  inset: (x: 1em, y: 0.5em),
-  width: 100%,
-  outset-x: 0pt, 
-  radius: 0pt,
-  navigation-pos: "bottom", // "top" (dots above titles) or "bottom" (dots below titles)
-  max-length: none,
-  use-short-title: false,
+  ..args,
 ) = {
-  let marker(is-active, is-future) = {
-    let color = if is-active { active-color } else if is-future { inactive-color } else { active-color.transparentize(40%) }
-    let radius = if marker-shape == "circle" { 50% } else { 0% }
-    box(
-      width: marker-size,
-      height: marker-size,
-      fill: color,
-      radius: radius,
-      baseline: marker-size * 0.1
-    )
-  }
-
-  let render-dot-group(slides) = {
-    slides.map(s => {
-      let is-active = s.number == current-slide-num
-      let is-future = s.number > current-slide-num
-      let m = marker(is-active, is-future)
-      if s.loc != none { link(s.loc, m) } else { m }
-    })
-  }
+  let pos = args.pos()
+  let named = args.named()
   
-  let fmt-title(item) = {
-    let level = item.at("level", default: 1)
+  let structure = pos.at(0, default: named.at("structure", default: auto))
+  let current-slide-num = pos.at(1, default: named.at("current-slide-num", default: auto))
+  
+  let fill = named.at("fill", default: auto)
+  let text-color = named.at("text-color", default: auto)
+  let text-size = named.at("text-size", default: 10pt)
+  let font = named.at("font", default: none)
+  let active-color = named.at("active-color", default: auto)
+  let inactive-color = named.at("inactive-color", default: auto)
+  let marker-shape = named.at("marker-shape", default: "circle")
+  let marker-size = named.at("marker-size", default: 4pt)
+  let style = named.at("style", default: auto)
+  let align-mode = named.at("align-mode", default: "left")
+  let dots-align = named.at("dots-align", default: "left")
+  let show-level1-titles = named.at("show-level1-titles", default: true)
+  let show-level2-titles = named.at("show-level2-titles", default: true)
+  let show-numbering = named.at("show-numbering", default: false)
+  let numbering-format = named.at("numbering-format", default: "1.1")
+  let gap = named.at("gap", default: 1.5em)
+  let line-spacing = named.at("line-spacing", default: 4pt)
+  let inset = named.at("inset", default: (x: 1em, y: 0.5em))
+  let width = named.at("width", default: 100%)
+  let outset-x = named.at("outset-x", default: 0pt)
+  let radius = named.at("radius", default: 0pt)
+  let navigation-pos = named.at("navigation-pos", default: "bottom")
+  let max-length = named.at("max-length", default: auto)
+  let use-short-title = named.at("use-short-title", default: auto)
+
+  import "structure.typ": navigator-config
+  
+  context {
+    let config = navigator-config.get()
     
-    let current-max-length = if type(max-length) == dictionary {
-      max-length.at("level-" + str(level), default: max-length.at(str(level), default: none))
-    } else {
-      max-length
-    }
-
-    let current-use-short = if type(use-short-title) == dictionary {
-      use-short-title.at("level-" + str(level), default: use-short-title.at(str(level), default: true))
-    } else {
-      use-short-title
-    }
-
-    let t = resolve-body(
-      item.title, 
-      short-title: item.at("short-title", default: none),
-      use-short-title: current-use-short,
-      max-length: current-max-length
-    )
-
-    if t == none { return none }
-    if show-numbering {
-      let fmt = if numbering-format == auto { item.at("numbering", default: none) } else { numbering-format }
-      if fmt != none and item.counter.any(v => v > 0) {
-        let num = numbering(fmt, ..item.counter)
-        t = [#num #t]
-      }
-    }
-    t
-  }
-
-  let content = {
-    set text(fill: text-color, size: text-size)
-    set par(leading: 0.8em)
-    if font != none { set text(font: font) }
+    let final-slide-selector = config.at("slide-selector", default: metadata.where(value: (t: "ContentSlide")))
+    let final-structure = if structure == auto { get-structure(slide-selector: final-slide-selector) } else { structure }
+    let final-current-slide-num = if current-slide-num == auto { get-current-logical-slide-number(slide-selector: final-slide-selector) } else { current-slide-num }
     
-    let items = ()
-    for root in structure {
-      let is-root-active = root.subsections.any(sub => {
-        if sub.at("slides", default: none) != none {
-          return sub.slides.any(s => s.number == current-slide-num)
-        } else if sub.at("subsections", default: none) != none {
-          return sub.subsections.any(ss => ss.slides.any(s => s.number == current-slide-num))
-        }
-        false
+    let m-config = config.at("miniframes", default: (:))
+    let final-fill = if fill == auto { m-config.at("fill", default: none) } else { fill }
+    let final-active-color = if active-color == auto { m-config.at("active-color", default: white) } else { active-color }
+    let final-inactive-color = if inactive-color == auto { m-config.at("inactive-color", default: gray) } else { inactive-color }
+    let final-style = if style == auto { m-config.at("style", default: "grid") } else { style }
+    let final-text-color = if text-color == auto { if final-fill == none { black } else { white } } else { text-color }
+
+    let final-max-length = if max-length == auto { config.at("max-length", default: none) } else { max-length }
+    let final-use-short = if use-short-title == auto { config.at("use-short-title", default: true) } else { use-short-title }
+
+    let marker(is-active, is-future) = {
+      let color = if is-active { final-active-color } else if is-future { final-inactive-color } else { final-active-color.transparentize(40%) }
+      let radius = if marker-shape == "circle" { 50% } else { 0% }
+      box(
+        width: marker-size,
+        height: marker-size,
+        fill: color,
+        radius: radius,
+        baseline: marker-size * 0.1
+      )
+    }
+
+    let render-dot-group(slides) = {
+      slides.map(s => {
+        let is-active = s.number == final-current-slide-num
+        let is-future = s.number > final-current-slide-num
+        let m = marker(is-active, is-future)
+        if s.loc != none { link(s.loc, m) } else { m }
       })
+    }
+    
+    let fmt-title(item) = {
+      let level = item.at("level", default: 1)
       
-      let title-part = if show-level1-titles and root.title != none {
-        let t = fmt-title(root)
-        let title-text = if is-root-active { strong(t) } else { t }
-        let title-link = if root.loc != none { link(root.loc, title-text) } else { title-text }
-        align(eval(dots-align), title-link)
-      }
-
-      let dots-part = if style == "compact" {
-        let all-slides = ()
-        for sub in root.subsections {
-          if sub.at("slides", default: none) != none { all-slides += sub.slides }
-          else if sub.at("subsections", default: none) != none {
-            for ss in sub.subsections { all-slides += ss.slides }
-          }
-        }
-        align(eval(dots-align), stack(dir: ltr, spacing: marker-size * 0.8, ..render-dot-group(all-slides)))
-      }
-
-      let root-content = if style == "compact" {
-        let elements = if navigation-pos == "bottom" { (title-part, dots-part) } else { (dots-part, title-part) }
-        stack(
-          dir: ttb,
-          spacing: line-spacing,
-          ..elements.filter(e => e != none)
-        )
+      let current-max-length = if type(final-max-length) == dictionary {
+        final-max-length.at("level-" + str(level), default: final-max-length.at(str(level), default: none))
       } else {
-        stack(
-          dir: ttb,
-          spacing: line-spacing,
-          ..((title-part, 
-          {
-            let rows = ()
-            for child in root.subsections {
-              let is-child-active = if child.at("slides", default: none) != none {
-                child.slides.any(s => s.number == current-slide-num)
-              } else {
-                child.subsections.any(ss => ss.slides.any(s => s.number == current-slide-num))
-              }
+        final-max-length
+      }
 
-              let title-cell = if show-level2-titles {
-                let t = fmt-title(child)
-                if t != none {
-                  let txt = if is-child-active { strong(t) } else { t }
-                  text(size: text-size * 0.85, if child.loc != none { link(child.loc, txt) } else { txt })
+      let current-use-short = if type(final-use-short) == dictionary {
+        final-use-short.at("level-" + str(level), default: final-use-short.at(str(level), default: true))
+      } else {
+        final-use-short
+      }
+
+      let t = resolve-body(
+        item.title, 
+        short-title: item.at("short-title", default: none),
+        use-short-title: current-use-short,
+        max-length: current-max-length
+      )
+
+      if t == none { return none }
+      if show-numbering {
+        let fmt = if numbering-format == auto { item.at("numbering", default: none) } else { numbering-format }
+        if fmt != none and item.counter.any(v => v > 0) {
+          let num = numbering(fmt, ..item.counter)
+          t = [#num #t]
+        }
+      }
+      t
+    }
+
+    let content-body = {
+      set text(fill: final-text-color, size: text-size)
+      set par(leading: 0.8em)
+      if font != none { set text(font: font) }
+      
+      let items = ()
+      for root in final-structure {
+        let is-root-active = root.subsections.any(sub => {
+          if sub.at("slides", default: none) != none {
+            return sub.slides.any(s => s.number == final-current-slide-num)
+          } else if sub.at("subsections", default: none) != none {
+            return sub.subsections.any(ss => ss.slides.any(s => s.number == final-current-slide-num))
+          }
+          false
+        })
+        
+        let title-part = if show-level1-titles and root.title != none {
+          let t = fmt-title(root)
+          let title-text = if is-root-active { strong(t) } else { t }
+          let title-link = if root.loc != none { link(root.loc, title-text) } else { title-text }
+          align(eval(dots-align), title-link)
+        }
+
+        let dots-part = if final-style == "compact" {
+          let all-slides = ()
+          for sub in root.subsections {
+            if sub.at("slides", default: none) != none { all-slides += sub.slides }
+            else if sub.at("subsections", default: none) != none {
+              for ss in sub.subsections { all-slides += ss.slides }
+            }
+          }
+          align(eval(dots-align), stack(dir: ltr, spacing: marker-size * 0.8, ..render-dot-group(all-slides)))
+        }
+
+        let root-content = if final-style == "compact" {
+          let elements = if navigation-pos == "bottom" { (title-part, dots-part) } else { (dots-part, title-part) }
+          stack(
+            dir: ttb,
+            spacing: line-spacing,
+            ..elements.filter(e => e != none)
+          )
+        } else {
+          stack(
+            dir: ttb,
+            spacing: line-spacing,
+            ..((title-part, 
+            {
+              let rows = ()
+              for child in root.subsections {
+                let is-child-active = if child.at("slides", default: none) != none {
+                  child.slides.any(s => s.number == final-current-slide-num)
+                } else {
+                  child.subsections.any(ss => ss.slides.any(s => s.number == final-current-slide-num))
+                }
+
+                let title-cell = if show-level2-titles {
+                  let t = fmt-title(child)
+                  if t != none {
+                    let txt = if is-child-active { strong(t) } else { t }
+                    text(size: text-size * 0.85, if child.loc != none { link(child.loc, txt) } else { txt })
+                  }
+                }
+                
+                let dots-cell = if child.at("subsections", default: none) != none {
+                  let groups = child.subsections.map(ss => {
+                    render-dot-group(ss.slides).join(h(marker-size * 0.8))
+                  })
+                  let sep = box(baseline: marker-size * 0.2, text(fill: final-inactive-color, weight: "bold", size: text-size * 0.8, [|]))
+                  groups.join(h(marker-size * 0.5) + sep + h(marker-size * 0.5))
+                } else {
+                  render-dot-group(child.slides).join(h(marker-size * 0.8))
+                }
+
+                if show-level2-titles {
+                  rows.push(align(horizon, title-cell))
+                  rows.push(align(horizon, dots-cell))
+                } else {
+                  rows.push(align(eval(dots-align), dots-cell))
                 }
               }
               
-              let dots-cell = if child.at("subsections", default: none) != none {
-                let groups = child.subsections.map(ss => {
-                  render-dot-group(ss.slides).join(h(marker-size * 0.8))
-                })
-                let sep = box(baseline: marker-size * 0.2, text(fill: inactive-color, weight: "bold", size: text-size * 0.8, [|]))
-                groups.join(h(marker-size * 0.5) + sep + h(marker-size * 0.5))
-              } else {
-                render-dot-group(child.slides).join(h(marker-size * 0.8))
-              }
-
               if show-level2-titles {
-                rows.push(align(horizon, title-cell))
-                rows.push(align(horizon, dots-cell))
+                grid(columns: (auto, auto), column-gutter: 0.8em, row-gutter: line-spacing * 0.7, ..rows)
               } else {
-                rows.push(align(eval(dots-align), dots-cell))
+                stack(dir: ttb, spacing: line-spacing * 0.7, ..rows)
               }
-            }
-            
-            if show-level2-titles {
-              grid(columns: (auto, auto), column-gutter: 0.8em, row-gutter: line-spacing * 0.7, ..rows)
-            } else {
-              stack(dir: ttb, spacing: line-spacing * 0.7, ..rows)
-            }
-          }).filter(e => e != none))
-        )
+            }).filter(e => e != none))
+          )
+        }
+        items.push(root-content)
       }
-      items.push(root-content)
+
+      grid(
+        columns: (auto,) * items.len(),
+        column-gutter: gap,
+        ..items
+      )
     }
 
-    grid(
-      columns: (auto,) * items.len(),
-      column-gutter: gap,
-      ..items
+    block(
+      width: width,
+      fill: final-fill,
+      inset: inset,
+      outset: (x: outset-x),
+      radius: radius,
+      align(eval(align-mode), content-body)
     )
   }
-
-  block(
-    width: width,
-    fill: fill,
-    inset: inset,
-    outset: (x: outset-x),
-    radius: radius,
-    align(eval(align-mode), content)
-  )
 }

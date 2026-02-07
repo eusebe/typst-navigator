@@ -11,6 +11,13 @@
   slide-func: none,
   theme-colors: (primary: black, accent: orange),
   transitions: (:),
+  slide-selector: metadata.where(value: (t: "ContentSlide")),
+  miniframes: (
+    fill: none,
+    active-color: white,
+    inactive-color: gray,
+    style: "grid",
+  ),
 ))
 
 

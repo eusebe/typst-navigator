@@ -11,14 +11,7 @@
 
 // --- COMPOSANT DE NAVIGATION (HEADER) ---
 #let nav-header = context {
-  // On ne compte que les slides avec le marqueur 'ContentSlide'
-  let selector = metadata.where(value: (t: "ContentSlide"))
-  let struct = navigator.get-structure(slide-selector: selector)
-  let current = navigator.get-current-logical-slide-number(slide-selector: selector)
-  
   navigator.render-miniframes(
-    struct, 
-    current, 
     fill: none, 
     text-color: black, 
     active-color: rgb("#1a5fb4"),

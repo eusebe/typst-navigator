@@ -44,21 +44,14 @@
 
 // 3. Header de navigation
 #set page(header: context {
-  let selector = metadata.where(value: (t: "ContentSlide"))
   let is-transition = query(heading.where(level: 1).or(heading.where(level: 2)))
     .any(h => h.location().page() == here().page())
   
   if here().page() > 1 and not is-transition {
-    let struct = navigator.get-structure(slide-selector: selector)
-    let current = navigator.get-current-logical-slide-number(slide-selector: selector)
-    
     set align(top)
     block(outset: (top: 2pt))[
       #navigator.render-miniframes(
-        struct,
-        current,
         fill: primary-color,
-        text-color: white,
         active-color: white,
         inactive-color: white.transparentize(60%),
         style: "grid",

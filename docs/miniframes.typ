@@ -56,10 +56,37 @@
 ]
 #v(2em)
 
-= Function documentation
+= Introduction
 The `render-miniframes` function generates a navigation bar showing the progress through sections and subsections using "miniframes" (dots or squares).
 
+Previously, it required manual structure extraction. Now, it is designed to be *configured globally* via `navigator-config`, allowing a clean one-line integration in your document.
+
+= Global Configuration
+Instead of passing parameters to every `render-miniframes` call, you can set them once at the beginning of your document:
+
+```typ
+#import "@preview/navigator:0.2.0": navigator-config, render-miniframes
+
+#navigator-config.update(c => {
+  c.slide-selector = metadata.where(value: (t: "ContentSlide"))
+  c.miniframes = (
+    fill: navy,
+    active-color: white,
+    inactive-color: gray,
+    style: "compact"
+  )
+  c
+})
+
+// Now you can use a simple one-liner in your header/footer:
+#set page(header: context render-miniframes())
+```
+
+= Function documentation
+`render-miniframes(structure, current-slide-num, ...)`
+
 == Parameters Reference
+Most parameters default to `auto`, which means they will be resolved from the global `navigator-config` state.
 
 #table(
   columns: (1.5fr, 1fr, 3fr),
@@ -67,20 +94,20 @@ The `render-miniframes` function generates a navigation bar showing the progress
   align: horizon,
   fill: (x, y) => if y == 0 { navy.lighten(90%) },
   table.header([*Option*], [*Type*], [*Effect & Expected Values*]),
-  [`structure`], [array], [*Mandatory*. The presentation structure typically obtained via `get-structure()`.],
-  [`current-slide-num`], [int], [*Mandatory*. The index of the active slide typically obtained via `get-current-logical-slide-number()`.],
-  [`style`], [string], [Layout mode: `"compact"` (all dots on one line) or `"grid"` (one line per subsection/subsubsection). Default: `"grid"`.],
+  [`structure`], [array | auto], [The presentation structure. If `auto`, resolved automatically from global `slide-selector`.],
+  [`current-slide-num`], [int | auto], [The index of the active slide. If `auto`, resolved automatically.],
+  [`style`], [string | auto], [Layout mode: `"compact"` or `"grid"`. Defaults to global config.],
   [`marker-shape`], [string], [`"circle"` (default) or `"square"`.],
   [`marker-size`], [length], [Diameter/width of the markers. Default: `4pt`.],
-  [`active-color`], [color], [Color of the current slide's marker. Default: `white`.],
-  [`inactive-color`], [color], [Color of future slides' markers. Default: `gray`.],
-  [`fill`], [color], [Background color of the navigation bar block. Default: `black`.],
-  [`text-color`], [color], [Color of the section/subsection titles. Default: `white`.],
+  [`active-color`], [color | auto], [Color of the current slide's marker. Defaults to global config.],
+  [`inactive-color`], [color | auto], [Color of future slides' markers. Defaults to global config.],
+  [`fill`], [color | auto], [Background color of the bar block. Defaults to global config.],
+  [`text-color`], [color | auto], [Color of titles. Defaults to contrast with `fill`.],
   [`text-size`], [length], [Size of the titles. Default: `10pt`.],
   [`font`], [string | none], [Font family for titles. Uses document default if `none`.],
   [`align-mode`], [string], [Global horizontal alignment of the block: `"left"`, `"center"`, `"right"`.],
   [`dots-align`], [string], [Alignment of the dots *within* their section column: `"left"`, `"center"`, `"right"`.],
-  [`navigation-pos`], [string], [Vertical position of dots relative to titles: `"top"` (dots above) or `"bottom"` (dots below). Default: `"bottom"`.],
+  [`navigation-pos`], [string], [Vertical position of dots relative to titles: `"top"` or `"bottom"`. Default: `"bottom"`.],
   [`show-level1-titles`], [bool], [Whether to display the names of sections.],
   [`show-level2-titles`], [bool], [In grid mode, whether to display subsection names.],
   [`show-numbering`], [bool], [Whether to display heading numbers. Default: `false`.],
@@ -88,16 +115,16 @@ The `render-miniframes` function generates a navigation bar showing the progress
   [`gap`], [length], [Horizontal space between sections. Default: `1.5em`.],
   [`line-spacing`], [length], [Vertical space between titles and dots. Default: `4pt`.],
   [`inset`], [dict | length], [Internal padding of the bar block. Default: `(x: 1em, y: 0.5em)`.],
-  [`radius`], [length | dict], [Corner rounding of the background block. Can be a single length for all corners, or a dictionary (e.g., `(top: 5pt)`) for specific corners. Default: `0pt`.],
+  [`radius`], [length | dict], [Corner rounding of the background block. Default: `0pt`.],
   [`width`], [length], [Total width of the block. Default: `100%`.],
   [`outset-x`], [length], [Horizontal bleed. Useful to make the bar touch page edges.],
-  [`max-length`], [int | dict], [Maximum length of titles before truncation. Ex: `10` or `(level-1: 8, level-2: 15)`. Defaults to `none`.],
-  [`use-short-title`], [bool | dict], [If true, uses short titles defined via `#metadata("...") <short>` (must be collected via `get-structure(all-shorts: ...)`). Default: `false`.],
+  [`max-length`], [int | dict | auto], [Maximum length before truncation. Defaults to global config.],
+  [`use-short-title`], [bool | dict | auto], [Whether to use short titles. Defaults to global config.],
 )
 
 = Structure Extraction
 
-To work, the navigation bar needs to know the presentation structure. Two functions are provided to extract this data from metadata markers.
+To work, the navigation bar needs to know the presentation structure. Two functions are provided to extract this data from metadata markers. These are called automatically by `render-miniframes()` if arguments are set to `auto`.
 
 == `get-structure`
 `get-structure(slide-selector: auto, filter-selector: none)` \
