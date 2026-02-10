@@ -241,7 +241,7 @@
     let config = navigator-config.get()
     
     let final-slide-selector = config.at("slide-selector", default: metadata.where(value: (t: "ContentSlide")))
-    let final-structure = if structure == auto { get-structure(slide-selector: final-slide-selector) } else { structure }
+    let final-structure = if structure == auto { get-structure(slide-selector: final-slide-selector, all-shorts: query(<short>)) } else { structure }
     let final-current-slide-num = if current-slide-num == auto { get-current-logical-slide-number(slide-selector: final-slide-selector) } else { current-slide-num }
     
     let m-config = config.at("miniframes", default: (:))
