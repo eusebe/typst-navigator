@@ -86,18 +86,14 @@
     else if is-completed { content-completed } 
     else { content-normal }
 
-  block(width: width, {
-    // Reserve space for all potential states to prevent jitter and overlaps
-    // even if 'completed' or 'inactive' states are larger than 'active'
-    hide(grid(
-      columns: 1,
-      rows: (auto, 0pt, 0pt),
-      content-normal,
-      content-active,
-      content-completed
-    ))
-    place(top + left, block(width: width, target-content))
-  })
+  // Reserve space for the tallest state to prevent layout jitter.
+  // Using measure() is more robust than the grid/0pt trick: it adapts
+  // automatically if new states are added in the future.
+  context {
+    let all-states = (content-normal, content-active, content-completed)
+    let max-h = all-states.map(c => measure(c).height).fold(0pt, (a, b) => calc.max(a, b))
+    block(width: width, height: max-h, place(top + left, block(width: width, target-content)))
+  }
 }
 
 #let default-outline-config = (
