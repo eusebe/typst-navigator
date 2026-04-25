@@ -53,7 +53,30 @@
   }
 }
 
-/// Main function to render a transition slide
+/// Renders a transition slide when a heading is encountered.
+///
+/// Typically used in a `show heading: h => render-transition(h, ...)` rule.
+/// `slide-func` must be provided either here or via `navigator-config`.
+///
+/// - h: the heading element triggering the transition
+/// - transitions: dictionary overriding `navigator-config` transition settings
+/// - mapping: heading-level → role map (`(section: 1, subsection: 2, ...)`)
+/// - slide-func: function `(fill: color, content) => slide` that wraps the
+///   transition content in a full slide. Must be set here or in
+///   `navigator-config` via:
+///   `navigator-config.update(c => { c.slide-func = my-fn; c })`
+/// - content-wrapper (expert mode): when provided, takes full control of the
+///   slide layout. Receives `(roadmap, h, active)` where:
+///   - `roadmap`: the `progressive-outline` content block
+///   - `h`: the original heading element
+///   - `active`: result of `get-active-headings(h.location())`, a dict
+///     `(h1: heading|none, h2: heading|none, h3: heading|none)`
+///   Use this to build fully custom headers, sidebars or animated layouts
+///   that need access to the current section context.
+/// - show-all-sections-in-transition: shorthand handled at theme level
+/// - top-padding, content-padding, content-align: layout of the roadmap
+///   inside the slide (ignored when `content-wrapper` is set)
+/// - max-length, use-short-title: title truncation passed to `progressive-outline`
 #let render-transition(
   h, 
   transitions: (:), 

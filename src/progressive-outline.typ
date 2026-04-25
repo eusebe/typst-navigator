@@ -134,8 +134,43 @@
   ),
 )
 
+/// Renders a progressive outline (table of contents with visibility states).
+///
+/// Each heading is shown as active, completed, or inactive depending on its
+/// position relative to `target-location`.
+///
+/// - level-N-mode: visibility rule for headings at level N. One of:
+///   `"all"` (always shown), `"current"` (only the active one),
+///   `"current-parent"` (siblings of the active heading), `"none"` (hidden).
+///   Defaults come from `navigator-config`.
+/// - layout: `"vertical"` (default, stacked list) or `"horizontal"` (inline)
+/// - separator: content inserted between items in horizontal layout
+/// - text-styles: per-level style overrides. A dict with keys `"level-1"`,
+///   `"level-2"`, `"level-3"`, each containing `active`, `inactive`,
+///   `completed` sub-dicts of text style arguments (fill, weight, size, …)
+/// - target-location: the location used to determine which heading is active.
+///   `auto` uses `here()`. Pass `h.location()` when called from a show rule.
+/// - match-page-only: if `true`, match by page number only (more robust in
+///   Touying/hook contexts where `here()` may not align exactly with headings)
+/// - filter: callback `(heading-info) => bool` to exclude specific headings.
+///   `heading-info` is a dict with fields:
+///   `level`, `body`, `location`, `label`, `parent-h1`, `parent-h2`
+///   Return `false` to hide a heading from the outline.
+/// - headings: pre-computed `query(heading.where(outlined: true))` result.
+///   `auto` runs the query automatically.
+/// - clickable: if `true` (default), each item links to its heading location
+/// - marker: bullet/icon shown next to each item. Three forms accepted:
+///   - Static value: same symbol for all states, e.g. `marker: sym.circle`
+///   - Dictionary: `(active: sym.triangle.filled, inactive: sym.circle,
+///     completed: sym.checkmark)` — one symbol per state
+///   - Function: `(state, level) => content` — full control per state and level,
+///     e.g. `marker: (s, l) => if s == "active" { sym.triangle.filled }`
+/// - max-length: max character count for titles. Int (global) or dict by level
+///   `("level-1": 20, "level-2": 12)`. `none` means no truncation.
+/// - use-short-title: whether to prefer `<short>` marker titles. Bool or dict
+///   by level.
 #let progressive-outline(
-  level-1-mode: auto, 
+  level-1-mode: auto,
   level-2-mode: auto,
   level-3-mode: auto,
   layout: "vertical",

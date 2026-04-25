@@ -1,8 +1,41 @@
 #import "structure.typ": find-short-titles
 #import "utils.typ": resolve-body, get-for-level
 
-/// Extraction of the presentation structure.
-/// Returns a dictionary with sections, each containing subsections, each containing logical slides.
+/// Extracts the full hierarchical structure of the presentation.
+///
+/// Must be called inside a `context` block.
+///
+/// - slide-selector: selector for logical slide markers (default: `auto` uses
+///   `metadata` filtered on `(t: "LogicalSlide")`). Pass a custom selector to
+///   match your presentation framework's slide markers.
+/// - filter-selector: optional selector; only slides on pages that also contain
+///   an element matching this selector are included.
+/// - all-shorts: result of `query(<short>)`, used to resolve short titles.
+///   Pass `none` to skip short-title resolution.
+///
+/// Returns an array of section dictionaries, each with the shape:
+/// ```
+/// (
+///   title: content | none,       // heading body
+///   short-title: content | none, // from <short> marker, if any
+///   numbering: str | none,       // heading numbering format
+///   counter: array,              // counter values at this heading
+///   level: int,                  // always 1
+///   loc: location | none,
+///   subsections: (               // array of level-2 entries
+///     (
+///       title, short-title, numbering, counter, level: 2, loc,
+///       slides: ((number: int, loc: location), ...), // if no level-3
+///       subsections: (           // array of level-3 entries, if present
+///         (title, short-title, numbering, counter, level: 3, loc,
+///          slides: ((number: int, loc: location), ...))
+///       )
+///     ), ...
+///   )
+/// )
+/// ```
+/// Performance note: each call queries the entire document. In headers/footers,
+/// pre-compute once and pass the result to `render-miniframes(structure, ...)`.
 #let get-structure(slide-selector: auto, filter-selector: none, all-shorts: none) = {
   let headings = query(heading.where(outlined: true).or(heading.where(level: 1)).or(heading.where(level: 2)).or(heading.where(level: 3)))
   
@@ -201,6 +234,38 @@
   return 1
 }
 
+/// Renders a miniframes navigation bar for use in slide headers or footers.
+///
+/// Accepts positional or named arguments. The first two positional arguments
+/// (or the named equivalents) are the most performance-sensitive:
+///
+/// - structure (pos 0 | named): pre-computed result of `get-structure()`.
+///   When `auto` (default), `get-structure()` is called automatically on every
+///   page. In headers/footers called once per slide, pre-compute once in the
+///   outer `context` block and pass the value here to avoid redundant queries:
+///   ```typst
+///   let s = get-structure(slide-selector: sel, all-shorts: query(<short>))
+///   render-miniframes(s, n)
+///   ```
+/// - current-slide-num (pos 1 | named): pre-computed result of
+///   `get-current-logical-slide-number()`. Same rationale as `structure`.
+///
+/// All other parameters are named:
+/// - fill: background color of the bar (`auto` → from `navigator-config`)
+/// - active-color: color for the current slide dot (`auto` → from config)
+/// - inactive-color: color for past/future slide dots (`auto` → from config)
+/// - style: `"grid"` (default) or `"dots"` layout for the dots
+/// - marker-shape: `"circle"` (default) or `"square"`
+/// - marker-size: size of each dot (default `4pt`)
+/// - show-level1-titles: show section titles above the dots (default `true`)
+/// - show-level2-titles: show subsection titles (default `true`)
+/// - show-numbering: prefix titles with their counter (default `false`)
+/// - gap: horizontal space between sections (default `1.5em`)
+/// - navigation-pos: `"top"` or `"bottom"` — which edge the bar is on
+///   (affects padding only, not placement, default `"bottom"`)
+/// - width, inset, radius, outset-x: geometry of the bar block
+/// - max-length, use-short-title: title truncation (same semantics as
+///   `progressive-outline`)
 #let render-miniframes(
   ..args,
 ) = {
