@@ -79,7 +79,13 @@
   let final-slide-func = if slide-func == auto { config.at("slide-func", default: none) } else { slide-func }
   let final-theme-colors = if theme-colors == auto { config.at("theme-colors", default: (:)) } else { theme-colors }
   
-  if final-slide-func == none { panic("navigator: slide-func must be provided either in navigator-config or as an argument to render-transition") }
+  if final-slide-func == none {
+    panic(
+      "navigator: slide-func must be provided. " +
+      "Set it via: navigator-config.update(c => { c.slide-func = my-slide-fn; c })" +
+      " — or pass slide-func: my-slide-fn directly to render-transition()."
+    )
+  }
   
   let final-max-length = if max-length == auto { config.at("max-length", default: none) } else { max-length }
   let final-use-short = if use-short-title == auto { config.at("use-short-title", default: false) } else { use-short-title }
