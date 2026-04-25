@@ -313,7 +313,7 @@ progressive-outline(
 ))
 
 = The anti-jitter mechanism
-Anti-jitter ensures that switching from a thin font to a bold one doesn't move the text. We use a ghost box to reserve the maximum space required.
+Anti-jitter ensures that switching from a thin font to a bold one doesn't shift the layout. For each entry, all three state variants (active, completed, inactive) are measured with `measure()`, and the maximum height and width are used to create a fixed-size container. This prevents any movement when the active item changes.
 
 #demo("Stability Test H1",
 "text-styles: (

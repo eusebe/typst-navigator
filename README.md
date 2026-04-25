@@ -14,12 +14,12 @@
 Import the package from the Typst Universe:
 
 ```typ
-#import "@preview/navigator:0.1.3": *
+#import "@preview/navigator:0.1.4": *
 ```
 
 ## Global Configuration
 
-Navigator 0.1.3 introduces a centralized configuration state. Setting this once at the beginning of your document allows you to use all other functions without arguments.
+Navigator 0.1.4 introduces a centralized configuration state. Setting this once at the beginning of your document allows you to use all other functions without arguments.
 
 ```typ
 #navigator-config.update(c => {
@@ -34,7 +34,7 @@ Navigator 0.1.3 introduces a centralized configuration state. Setting this once 
 
 ### Progressive Outline (`progressive-outline`)
 
-The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/progressive-outline.pdf)).
+The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.4/docs/progressive-outline.pdf)).
 
 ```typ
 // Respects global config automatically
@@ -46,7 +46,7 @@ The `progressive-outline` function inserts a table of contents that reflects the
 
 ### Miniframes (`render-miniframes`)
 
-Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/miniframes.pdf)).
+Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.4/docs/miniframes.pdf)).
 
 ```typ
 // Simplest usage (context required for auto-resolution)
@@ -55,7 +55,7 @@ Generates a bar of dots representing the logical structure of a presentation. Se
 
 ### Transition Engine (`render-transition`)
 
-Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.3/docs/transition.pdf)).
+Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.4/docs/transition.pdf)).
 
 ```typ
 // Clean one-liner using global configuration
@@ -66,17 +66,25 @@ Automates the creation of roadmap slides using a show rule. See [detailed docume
 
 Integration examples are available in the `examples/` directory:
 
-- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/presentate_integration.pdf))
-- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/polylux_progressive_ouline.pdf))
-- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/typslides_miniframes.pdf))
-- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/diatypst_integration.pdf))
-- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.3/examples/markers.pdf))
+- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/presentate_integration.pdf))
+- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/polylux_progressive_ouline.pdf))
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/typslides_miniframes.pdf))
+- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/diatypst_integration.pdf))
+- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/touying_transitions.pdf))
+- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.4/examples/markers.pdf))
 
 ## Acknowledgement 
 
 Thanks to the [presentate package author](https://github.com/pacaunt/typst-presentate) for his constructive feedback and insights.
 
 ## Changelog
+
+### 0.1.4
+- **New example**: Touying 0.7.3 integration using `new-section-slide-fn`/`new-subsection-slide-fn` hooks with `slide-level: 3` for heading-driven slide creation and per-slide titles.
+- **Bug fix**: Fixed horizontal layout in `progressive-outline` where items would overlap when `width: auto` (out-of-flow `place()` was collapsing the block width to zero).
+- **Improved anti-jitter**: Replaced the internal `grid`/`0pt` ghost-row trick with a `measure()`-based approach that explicitly reserves the maximum height and width across all states.
+- **Better error messages**: `render-transition` now panics with two concrete fix examples when `slide-func` is missing.
+- **Docstrings**: Added comprehensive docstrings for `get-structure`, `render-miniframes`, `render-transition`, and `progressive-outline`.
 
 ### 0.1.3
 - **Global Configuration**: Introduced `navigator-config` to centralize mapping, colors, slide functions, and component defaults.
