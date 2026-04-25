@@ -1,4 +1,4 @@
-#import "@preview/typslides:1.3.2" as ts
+#import "@preview/typslides:1.3.3" as ts
 #import ts: *
 #import "../lib.typ" as navigator
 

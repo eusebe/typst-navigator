@@ -1,4 +1,4 @@
-#import "@preview/presentate:0.2.4" as ps
+#import "@preview/presentate:0.2.5" as ps
 #import "../lib.typ" as navigator
 
 // --- CONFIGURATION ---
