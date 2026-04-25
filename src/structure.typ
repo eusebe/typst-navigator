@@ -188,36 +188,6 @@
     if my-short != none { my-short.value } else { none }
   }
 
-  let fmt-h(h) = {
-    if h == none { return none }
-    let level = h.level
-    let current-max-length = if type(config.at("max-length", default: none)) == dictionary {
-      config.max-length.at("level-" + str(level), default: config.max-length.at(str(level), default: none))
-    } else {
-      config.at("max-length", default: none)
-    }
-
-    let current-use-short = if type(config.at("use-short-title", default: true)) == dictionary {
-      config.use-short-title.at("level-" + str(level), default: config.use-short-title.at(str(level), default: true))
-    } else {
-      config.at("use-short-title", default: true)
-    }
-
-    let body = resolve-body(
-      h.body,
-      short-title: get-short(h),
-      use-short-title: current-use-short,
-      max-length: current-max-length
-    )
-
-    format-heading(
-      h, 
-      show-numbering: config.at("show-heading-numbering", default: false),
-      numbering-format: config.at("numbering-format", default: auto)
-    )
-    // Wait, format-heading uses h.body. I need to override it.
-  }
-  
   // Re-implementing a bit of format-heading logic here to avoid h.body issue
   let final-fmt(h) = {
     if h == none { return none }
