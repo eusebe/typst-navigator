@@ -1,5 +1,5 @@
 #import "structure.typ": get-active-headings, find-short-titles, navigator-config
-#import "utils.typ": extract-text, truncate-text, resolve-body, merge-dicts
+#import "utils.typ": extract-text, truncate-text, resolve-body, merge-dicts, get-for-level
 
 /// Helper function to resolve styles with opacity/inheritance logic
 #let resolve-state-style(active-style, target-style) = {
@@ -277,17 +277,8 @@
           if fmt != none and trimmed-idx.any(v => v > 0) { fmt } else { none }
         } else { none }
 
-        let current-max-length = if type(final-max-length) == dictionary {
-          final-max-length.at("level-" + str(h.level), default: final-max-length.at(str(h.level), default: none))
-        } else {
-          final-max-length
-        }
-
-        let current-use-short = if type(final-use-short) == dictionary {
-          final-use-short.at("level-" + str(h.level), default: final-use-short.at(str(h.level), default: true))
-        } else {
-          final-use-short
-        }
+        let current-max-length = get-for-level(final-max-length, h.level)
+        let current-use-short = get-for-level(final-use-short, h.level, default: true)
 
         let display-body = resolve-body(
           h.body, 

@@ -1,3 +1,14 @@
+/// Resolves a config value that can be either a global value or a per-level
+/// dictionary (e.g. ("level-1": 20, "level-2": 12) or simply 15).
+#let get-for-level(config, level, default: none) = {
+  if config == none { return default }
+  if type(config) == dictionary {
+    return config.at("level-" + str(level), default:
+      config.at(str(level), default: default))
+  }
+  config
+}
+
 /// Merges two dictionaries recursively.
 #let merge-dicts(dict-a, base: (:)) = {
   let res = base

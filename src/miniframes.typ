@@ -1,5 +1,5 @@
 #import "structure.typ": find-short-titles
-#import "utils.typ": resolve-body
+#import "utils.typ": resolve-body, get-for-level
 
 /// Extraction of the presentation structure.
 /// Returns a dictionary with sections, each containing subsections, each containing logical slides.
@@ -278,17 +278,8 @@
     let fmt-title(item) = {
       let level = item.at("level", default: 1)
       
-      let current-max-length = if type(final-max-length) == dictionary {
-        final-max-length.at("level-" + str(level), default: final-max-length.at(str(level), default: none))
-      } else {
-        final-max-length
-      }
-
-      let current-use-short = if type(final-use-short) == dictionary {
-        final-use-short.at("level-" + str(level), default: final-use-short.at(str(level), default: true))
-      } else {
-        final-use-short
-      }
+      let current-max-length = get-for-level(final-max-length, level)
+      let current-use-short = get-for-level(final-use-short, level, default: true)
 
       let t = resolve-body(
         item.title, 

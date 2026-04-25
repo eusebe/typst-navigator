@@ -1,4 +1,4 @@
-#import "utils.typ": resolve-body
+#import "utils.typ": resolve-body, get-for-level
 
 /// Global state for structure mapping and auto-titling
 #let navigator-config = state("navigator-config", (
@@ -192,17 +192,8 @@
   let final-fmt(h) = {
     if h == none { return none }
     let level = h.level
-    let current-max-length = if type(config.at("max-length", default: none)) == dictionary {
-      config.max-length.at("level-" + str(level), default: config.max-length.at(str(level), default: none))
-    } else {
-      config.at("max-length", default: none)
-    }
-
-    let current-use-short = if type(config.at("use-short-title", default: true)) == dictionary {
-      config.use-short-title.at("level-" + str(level), default: config.use-short-title.at(str(level), default: true))
-    } else {
-      config.at("use-short-title", default: true)
-    }
+    let current-max-length = get-for-level(config.at("max-length", default: none), level)
+    let current-use-short = get-for-level(config.at("use-short-title", default: true), level, default: true)
 
     let body = resolve-body(
       h.body,
