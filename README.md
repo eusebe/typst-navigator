@@ -79,6 +79,9 @@ Thanks to the [presentate package author](https://github.com/pacaunt/typst-prese
 
 ## Changelog
 
+### 0.1.5
+- **Bug fix**: Replaced the `context`+`measure()` approach introduced in 0.1.4 with the original `hide(grid(...))` trick. The `measure()` inside a nested `context` block caused "layout did not converge within 5 attempts" warnings when `progressive-outline` was called from within an existing `context` block (e.g. headers, footers, breadcrumbs). The `hide(grid)` approach handles both fixed-width and `auto`-width cases without triggering extra layout passes.
+
 ### 0.1.4
 - **New example**: Touying 0.7.3 integration using `new-section-slide-fn`/`new-subsection-slide-fn` hooks with `slide-level: 3` for heading-driven slide creation and per-slide titles.
 - **Bug fix**: Fixed horizontal layout in `progressive-outline` where items would overlap when `width: auto` (out-of-flow `place()` was collapsing the block width to zero).
