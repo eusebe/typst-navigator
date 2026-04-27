@@ -86,21 +86,14 @@
     else if is-completed { content-completed } 
     else { content-normal }
 
-  // Reserve space for the tallest state to prevent layout jitter.
-  // Using measure() is more robust than the grid/0pt trick: it adapts
-  // automatically if new states are added in the future.
-  // When width is auto (horizontal layout), we also measure the widest state
-  // so that place() — which is out-of-flow — doesn't collapse the block to zero.
-  context {
-    let all-states = (content-normal, content-active, content-completed)
-    let max-h = all-states.map(c => measure(c).height).fold(0pt, (a, b) => calc.max(a, b))
-    let final-width = if width == auto {
-      all-states.map(c => measure(c).width).fold(0pt, (a, b) => calc.max(a, b))
-    } else {
-      width
-    }
-    block(width: final-width, height: max-h, place(top + left, block(width: final-width, target-content)))
-  }
+  // Reserve space for all states to prevent layout jitter.
+  // Uses hide(grid(...)) to avoid nested context+measure calls, which caused
+  // "layout did not converge" warnings when called from within a context block.
+  // For width:auto, the block sizes to the hidden grid's max-width naturally.
+  block(width: width, {
+    hide(grid(columns: 1, rows: (auto, 0pt, 0pt), content-normal, content-active, content-completed))
+    place(top + left, block(width: width, target-content))
+  })
 }
 
 #let default-outline-config = (
