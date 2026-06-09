@@ -14,7 +14,7 @@
 Import the package from the Typst Universe:
 
 ```typ
-#import "@preview/navigator:0.1.5": *
+#import "@preview/navigator:0.1.6": *
 ```
 
 ## Global Configuration
@@ -34,7 +34,7 @@ Navigator 0.1.4 introduces a centralized configuration state. Setting this once 
 
 ### Progressive Outline (`progressive-outline`)
 
-The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.5/docs/progressive-outline.pdf)).
+The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.6/docs/progressive-outline.pdf)).
 
 ```typ
 // Respects global config automatically
@@ -46,7 +46,7 @@ The `progressive-outline` function inserts a table of contents that reflects the
 
 ### Miniframes (`render-miniframes`)
 
-Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.5/docs/miniframes.pdf)).
+Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.6/docs/miniframes.pdf)).
 
 ```typ
 // Simplest usage (context required for auto-resolution)
@@ -55,7 +55,7 @@ Generates a bar of dots representing the logical structure of a presentation. Se
 
 ### Transition Engine (`render-transition`)
 
-Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.5/docs/transition.pdf)).
+Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.6/docs/transition.pdf)).
 
 ```typ
 // Clean one-liner using global configuration
@@ -66,18 +66,21 @@ Automates the creation of roadmap slides using a show rule. See [detailed docume
 
 Integration examples are available in the `examples/` directory:
 
-- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/presentate_integration.pdf))
-- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/polylux_progressive_ouline.pdf))
-- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/typslides_miniframes.pdf))
-- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/diatypst_integration.pdf))
-- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/touying_transitions.pdf))
-- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.5/examples/markers.pdf))
+- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/presentate_integration.pdf))
+- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/polylux_progressive_ouline.pdf))
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/typslides_miniframes.pdf))
+- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/diatypst_integration.pdf))
+- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/touying_transitions.pdf))
+- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/markers.pdf))
 
 ## Acknowledgement 
 
 Thanks to the [presentate package author](https://github.com/pacaunt/typst-presentate) for his constructive feedback and insights.
 
 ## Changelog
+
+### 0.1.6
+- **New feature**: `progressive-outline` now accepts an `item-align` parameter (`left` / `center` / `right`, default `left`) to control the horizontal alignment of text within each item. When set to a non-left value, level indents (`indent-1/2/3`) are automatically zeroed so that all depth levels align consistently. Explicit `spacing` values still take priority over the automatic zeroing.
 
 ### 0.1.5
 - **Bug fix**: Replaced the `context`+`measure()` approach introduced in 0.1.4 with the original `hide(grid(...))` trick. The `measure()` inside a nested `context` block caused "layout did not converge within 5 attempts" warnings when `progressive-outline` was called from within an existing `context` block (e.g. headers, footers, breadcrumbs). The `hide(grid)` approach handles both fixed-width and `auto`-width cases without triggering extra layout passes.
