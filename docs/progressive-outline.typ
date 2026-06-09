@@ -361,6 +361,23 @@ Indentation defines the offset to the right for each depth level.
 )",
 progressive-outline(level-2-mode: "all", level-3-mode: "all", spacing: (indent-2: 3em, indent-3: 6em)))
 
+== Item alignment
+The `item-align` parameter controls the horizontal alignment of text within each item: `left` (default), `center`, or `right`. When set to a non-left value, level indents are automatically zeroed so that all items align consistently within the container.
+
+#demo("Centered items",
+"progressive-outline(
+  level-2-mode: 'all',
+  item-align: center
+)",
+progressive-outline(level-2-mode: "all", item-align: center))
+
+#demo("Right-aligned items",
+"progressive-outline(
+  level-2-mode: 'all',
+  item-align: right
+)",
+progressive-outline(level-2-mode: "all", item-align: right))
+
 = Numbering system
 The function relies on Typst's native engine.
 

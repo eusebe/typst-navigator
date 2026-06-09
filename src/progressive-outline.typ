@@ -37,19 +37,20 @@
 
 /// Renders an item with jitter prevention.
 #let render-item(
-  body, 
-  is-active: false, 
+  body,
+  is-active: false,
   is-completed: false,
-  text-style: (:), 
+  text-style: (:),
   active-text-style: (:),
   completed-text-style: none,
   numbering-format: none,
   index: none,
   clickable: false,
   dest: none,
-  markers: (:), 
+  markers: (:),
   marker-spacing: (:),
   width: auto,
+  item-align: left,
 ) = {
   let base-style = text-style
   let active-style = active-text-style
@@ -92,7 +93,7 @@
   // For width:auto, the block sizes to the hidden grid's max-width naturally.
   block(width: width, {
     hide(grid(columns: 1, rows: (auto, 0pt, 0pt), content-normal, content-active, content-completed))
-    place(top + left, block(width: width, target-content))
+    place(top + left, block(width: width, align(item-align, target-content)))
   })
 }
 
@@ -100,6 +101,7 @@
   level-1-mode: "all",
   level-2-mode: "current-parent",
   level-3-mode: "none",
+  item-align: left,
   text-styles: (
     level-1: (
       active: (fill: rgb("#000000"), weight: "bold"), 
@@ -162,6 +164,11 @@
 ///   `("level-1": 20, "level-2": 12)`. `none` means no truncation.
 /// - use-short-title: whether to prefer `<short>` marker titles. Bool or dict
 ///   by level.
+/// - item-align: horizontal alignment of text within each item. One of `left`
+///   (default), `center`, or `right`. When set to a value other than `left`,
+///   all level indents (`indent-1/2/3`) are automatically zeroed so that items
+///   at every depth align consistently. You can override this by passing
+///   explicit `spacing` values, which take priority.
 #let progressive-outline(
   level-1-mode: auto,
   level-2-mode: auto,
@@ -180,6 +187,7 @@
   marker: none,
   max-length: auto,
   use-short-title: auto,
+  item-align: auto,
 ) = {
     context {
       let config = navigator-config.get()
@@ -192,7 +200,17 @@
       let final-level-3-mode = if level-3-mode == auto { p-config.at("level-3-mode") } else { level-3-mode }
 
       let final-text-styles = merge-dicts(if text-styles == auto { (:) } else { text-styles }, base: p-config.at("text-styles"))
-      let final-spacing = merge-dicts(if spacing == auto { (:) } else { spacing }, base: p-config.at("spacing"))
+
+      let final-item-align = if item-align == auto { p-config.at("item-align", default: left) } else { item-align }
+      // When not left-aligned, zero all level indents so items at every depth
+      // are aligned consistently. Explicit spacing args still take priority.
+      let indent-override = if final-item-align != left {
+        (indent-1: 0pt, indent-2: 0pt, indent-3: 0pt)
+      } else { (:) }
+      let final-spacing = merge-dicts(
+        if spacing == auto { (:) } else { spacing },
+        base: merge-dicts(indent-override, base: p-config.at("spacing"))
+      )
 
       let final-show-numbering = if show-numbering == auto { config.at("show-heading-numbering", default: false) } else { show-numbering }
       let final-numbering-format = if numbering-format == auto { config.at("numbering-format", default: auto) } else { numbering-format }
@@ -323,6 +341,7 @@
           markers: (active: m-active, inactive: m-inactive, completed: m-completed),
           marker-spacing: m-spacing,
           width: if layout == "horizontal" { auto } else { 100% },
+          item-align: final-item-align,
         )
 
         if layout == "horizontal" {
