@@ -1,4 +1,4 @@
-#import "@preview/touying:0.7.3": *
+#import "@preview/touying:0.7.4": *
 #import themes.simple: *
 #import "../lib.typ" as navigator
 

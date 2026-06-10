@@ -65,7 +65,7 @@ Previously, it required manual structure extraction. Now, it is designed to be *
 Instead of passing parameters to every `render-miniframes` call, you can set them once at the beginning of your document:
 
 ```typ
-#import "@preview/navigator:0.2.0": navigator-config, render-miniframes
+#import "@preview/navigator:0.1.6": navigator-config, render-miniframes
 
 #navigator-config.update(c => {
   c.slide-selector = metadata.where(value: (t: "ContentSlide"))

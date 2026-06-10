@@ -36,7 +36,7 @@ Previously, it required manual styling for every call. Now, it is designed to be
 You can define the default appearance and behavior of all outlines at the beginning of your document:
 
 ```typ
-#import "@preview/navigator:0.2.0": navigator-config, progressive-outline
+#import "@preview/navigator:0.1.6": navigator-config, progressive-outline
 
 #navigator-config.update(c => {
   c.progressive-outline = (

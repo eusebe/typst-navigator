@@ -49,7 +49,7 @@ Previously, it required many manual parameters. Now, it is designed to be *confi
 Instead of passing parameters to every `render-transition` call, you can set them once at the beginning of your document:
 
 ```typ
-#import "@preview/navigator:0.2.0": navigator-config, render-transition
+#import "@preview/navigator:0.1.6": navigator-config, render-transition
 
 #navigator-config.update(c => {
   c.mapping = (section: 1, subsection: 2)
