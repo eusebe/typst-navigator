@@ -14,7 +14,7 @@
 Import the package from the Typst Universe:
 
 ```typ
-#import "@preview/navigator:0.1.6": *
+#import "@preview/navigator:0.1.7": *
 ```
 
 ## Global Configuration
@@ -34,7 +34,7 @@ Navigator 0.1.4 introduces a centralized configuration state. Setting this once 
 
 ### Progressive Outline (`progressive-outline`)
 
-The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.6/docs/progressive-outline.pdf)).
+The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.7/docs/progressive-outline.pdf)).
 
 ```typ
 // Respects global config automatically
@@ -46,7 +46,7 @@ The `progressive-outline` function inserts a table of contents that reflects the
 
 ### Miniframes (`render-miniframes`)
 
-Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.6/docs/miniframes.pdf)).
+Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.7/docs/miniframes.pdf)).
 
 ```typ
 // Simplest usage (context required for auto-resolution)
@@ -55,7 +55,7 @@ Generates a bar of dots representing the logical structure of a presentation. Se
 
 ### Transition Engine (`render-transition`)
 
-Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.6/docs/transition.pdf)).
+Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.7/docs/transition.pdf)).
 
 ```typ
 // Clean one-liner using global configuration
@@ -66,18 +66,23 @@ Automates the creation of roadmap slides using a show rule. See [detailed docume
 
 Integration examples are available in the `examples/` directory:
 
-- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/presentate_integration.pdf))
-- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/polylux_progressive_ouline.pdf))
-- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/typslides_miniframes.pdf))
-- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/diatypst_integration.pdf))
-- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/touying_transitions.pdf))
-- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.6/examples/markers.pdf))
+- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/presentate_integration.pdf))
+- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/polylux_miniframes.pdf)), [Progressive Outline & Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/polylux_progressive_ouline.pdf))
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/typslides_miniframes.pdf))
+- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/diatypst_integration.pdf))
+- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/touying_transitions.pdf))
+- [**Mosaic**](https://typst.app/universe/package/mosaic): [Two-level Structural Transitions](examples/mosaic_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/mosaic_transitions.pdf))
+- [**Slydekit**](https://typst.app/universe/package/slydekit): [Two-level Structural Transitions](examples/slydekit_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/slydekit_transitions.pdf))
+- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/markers.pdf))
 
 ## Acknowledgement 
 
 Thanks to the [presentate package author](https://github.com/pacaunt/typst-presentate) for his constructive feedback and insights.
 
 ## Changelog
+
+### 0.1.7
+- **New examples**: [Mosaic](examples/mosaic_transitions.typ) and [Slydekit](examples/slydekit_transitions.typ) integrations, both demonstrating two-level structural transitions (section + subsection). Neither backend exposes a plain `show heading: ...` hook for this: Mosaic drives slide creation from `setup(headings:)` and requires overriding its `"section"` layout with a custom grid cell; Slydekit's own theme installs its own `show heading.where(level: ...)` rules that must be neutralized (`show heading.where(level: N): none`) before navigator's own rule can take over.
 
 ### 0.1.6
 - **New feature**: `progressive-outline` now accepts an `item-align` parameter (`left` / `center` / `right`, default `left`) to control the horizontal alignment of text within each item. When set to a non-left value, level indents (`indent-1/2/3`) are automatically zeroed so that all depth levels align consistently. Explicit `spacing` values still take priority over the automatic zeroing.
