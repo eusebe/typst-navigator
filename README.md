@@ -68,7 +68,7 @@ Integration examples are available in the `examples/` directory:
 
 - [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/presentate_integration.pdf))
 - [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/polylux_miniframes.pdf)), [Structural Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/polylux_progressive_ouline.pdf))
-- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/typslides_miniframes.pdf))
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/typslides_miniframes.pdf)), [Structural Transitions](examples/typslides_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/typslides_transitions.pdf))
 - [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/diatypst_integration.pdf))
 - [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/touying_transitions.pdf))
 - [**Mosaic**](https://typst.app/universe/package/mosaic): [Structural Transitions](examples/mosaic_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/mosaic_transitions.pdf))
@@ -83,6 +83,7 @@ Thanks to the [presentate package author](https://github.com/pacaunt/typst-prese
 
 ### 0.1.7
 - **New examples**: [Mosaic](examples/mosaic_transitions.typ) and [Slydekit](examples/slydekit_transitions.typ) integrations, both demonstrating two-level structural transitions (section + subsection). Neither backend exposes a plain `show heading: ...` hook for this: Mosaic drives slide creation from `setup(headings:)` and requires overriding its `"section"` layout with a custom grid cell; Slydekit's own theme installs its own `show heading.where(level: ...)` rules that must be neutralized (`show heading.where(level: N): none`) before navigator's own rule can take over.
+- **New example**: [Typslides](examples/typslides_transitions.typ) integration, also demonstrating two-level structural transitions. Unlike Mosaic and Slydekit, Typslides never turns headings into slides on its own, so a plain `show heading: render-transition` is enough — no workaround needed.
 
 ### 0.1.6
 - **New feature**: `progressive-outline` now accepts an `item-align` parameter (`left` / `center` / `right`, default `left`) to control the horizontal alignment of text within each item. When set to a non-left value, level indents (`indent-1/2/3`) are automatically zeroed so that all depth levels align consistently. Explicit `spacing` values still take priority over the automatic zeroing.
