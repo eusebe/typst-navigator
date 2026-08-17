@@ -9,6 +9,8 @@
   show-progress: false,
 )
 
+#set heading(numbering: "1.1")
+
 #let primary = rgb("#1a5fb4")
 #let accent = orange
 
