@@ -30,7 +30,7 @@
   context metadata((t: "LogicalSlide", v: logical-slide-counter.get().at(0)))
   
   // 2. Emit a Content marker to filter out non-content pages (phantom dots)
-  metadata((t: "ContentSlide"))
+  navigator.mark-slide()
   
   // 3. Setup the page header with the miniframes bar
   set page(header: context {

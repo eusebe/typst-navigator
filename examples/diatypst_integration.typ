@@ -32,7 +32,7 @@
 // 2. Wrapper de Slide
 #let slide(title: none, body) = {
   pagebreak(weak: true)
-  metadata((t: "ContentSlide"))
+  navigator.mark-slide()
   
   if title != none {
     set text(fill: primary-color, weight: "bold", size: 1.2em)
@@ -44,10 +44,7 @@
 
 // 3. Header de navigation
 #set page(header: context {
-  let is-transition = query(heading.where(level: 1).or(heading.where(level: 2)))
-    .any(h => h.location().page() == here().page())
-  
-  if here().page() > 1 and not is-transition {
+  if here().page() > 1 and not navigator.is-transition-here() {
     set align(top)
     block(outset: (top: 2pt))[
       #navigator.render-miniframes(

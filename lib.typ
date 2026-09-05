@@ -19,3 +19,5 @@
 #let format-heading = structure.format-heading
 #let find-short-titles = structure.find-short-titles
 #let is-role = structure.is-role
+#let mark-slide = structure.mark-slide
+#let is-transition-here = structure.is-transition-here

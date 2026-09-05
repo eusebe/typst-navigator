@@ -27,7 +27,7 @@
 // --- WRAPPER DE SLIDE ---
 #let slide(title: none, body) = {
   // On émet le marqueur pour que cette slide produise un point (dot)
-  metadata((t: "ContentSlide"))
+  navigator.mark-slide()
   
   ps.slide[
     #if title != none {

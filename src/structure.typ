@@ -265,3 +265,44 @@
 #let is-role(mapping, lvl, role) = {
   return mapping.at(role, default: none) == lvl
 }
+
+/// Marks the current point in the document as a logical "content slide" for
+/// navigator's default `slide-selector` (`metadata.where(value: (t:
+/// "ContentSlide"))`). Several framework integrations need this marker so
+/// `render-miniframes`/`get-structure` know which slides should produce a
+/// dot or outline entry; this emits the exact shape that convention expects,
+/// so callers don't have to hand-write and keep in sync a
+/// `metadata((t: "ContentSlide"))` literal themselves.
+///
+/// Only meaningful with the default `slide-selector` -- a custom
+/// `slide-selector` set in `navigator-config` needs its own matching marker
+/// instead.
+#let mark-slide() = metadata((t: "ContentSlide"))
+
+/// Whether the current page carries one of the mapped structural headings
+/// (section/subsection/part, per `navigator-config`'s `mapping`) rather than
+/// only ordinary slide content -- the page-based test several framework
+/// integrations hand-roll (querying headings and comparing `.location().page()`
+/// to `here().page()`) to decide whether a running header/footer should draw
+/// a miniframes bar on this page, since a transition/divider page usually
+/// shouldn't get one.
+///
+/// Relies on one slide being one Typst page, which holds for every paged
+/// framework navigator integrates with (touying, polylux, typslides,
+/// slydekit, presentate, diatypst, mosaic) but not for typstage's HTML
+/// build, where every location reports page 1 -- see `get-active-headings`'s
+/// documentation for that case.
+///
+/// Returns a plain boolean, not content -- like `get-active-headings`, call
+/// it from inside a `context { .. }` block (it uses `here()`/`query()`
+/// itself, so it can't establish its own context and still hand back a
+/// value usable in `if`/`and`/`not`).
+#let is-transition-here() = {
+  let config = navigator-config.get()
+  let levels = config.mapping.values().filter(v => v != none)
+  if levels.len() == 0 { return false }
+  let here-page = here().page()
+  query(heading.where(outlined: true)).any(h =>
+    levels.contains(h.level) and h.location().page() == here-page
+  )
+}

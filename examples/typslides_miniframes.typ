@@ -27,7 +27,7 @@
 #let slide(title: none, ..args) = {
   ts.slide(title: title, ..args.named(), [
     #show-nav-bar.update(true)
-    #metadata((t: "ContentSlide"))
+    #navigator.mark-slide()
     #args.pos().sum(default: none)
   ])
 }
@@ -36,7 +36,7 @@
 #let focus-slide(body) = {
   ts.focus-slide([
     #show-nav-bar.update(true)
-    #metadata((t: "ContentSlide"))
+    #navigator.mark-slide()
     #body
   ])
 }
