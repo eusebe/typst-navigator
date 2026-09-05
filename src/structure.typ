@@ -112,12 +112,41 @@
 
 
 /// Returns the active headings (h1, h2, h3) at a given location using query.
+///
+/// Under HTML export (and, more generally, inside `html.frame(..)`, even
+/// where `target()` still reports "paged") every location reports page 1 /
+/// y 0pt, so the page+position comparison below can't order headings
+/// relative to `loc`. query() still returns elements in document order in
+/// both cases though, so when `loc` is itself the location of one of the
+/// queried headings (e.g. `target-location: h.location()`, as recommended
+/// for Touying/hook contexts and other introspection-hostile export paths),
+/// we recover correct ordering from its index in `all-headings` instead of
+/// from position — tried unconditionally, before falling back to the
+/// position-based scan below for the common `here()` case where `loc`
+/// doesn't match any heading exactly.
 #let get-active-headings(loc, match-page-only: false, headings: none) = {
   let all-headings = if headings != none { headings } else { query(heading.where(outlined: true)) }
+
+  let match-idx = none
+  for (i, h) in all-headings.enumerate() {
+    if h.location() == loc { match-idx = i }
+  }
+  if match-idx != none {
+    let active-h1 = none
+    let active-h2 = none
+    let active-h3 = none
+    for h in all-headings.slice(0, match-idx + 1) {
+      if h.level == 1 { active-h1 = h; active-h2 = none; active-h3 = none }
+      else if h.level == 2 { active-h2 = h; active-h3 = none }
+      else if h.level == 3 { active-h3 = h }
+    }
+    return (h1: active-h1, h2: active-h2, h3: active-h3)
+  }
+
   let active-h1 = none
   let active-h2 = none
   let active-h3 = none
-  
+
   for h in all-headings {
     let h-loc = h.location()
     let is-match = (h-loc == loc)
