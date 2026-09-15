@@ -1,4 +1,4 @@
-#import "@preview/slydekit:0.1.0" as sk
+#import "@preview/slydekit:0.4.1" as sk
 #import "../lib.typ" as navigator
 
 // --- CONFIGURATION ---
@@ -17,23 +17,37 @@
   c
 })
 
+// --- TRANSITION LOGIC ---
+//
+// slydekit's own theme reacts to `=`/`==` headings on its own: an automatic
+// "Outline" divider slide at level `slide-level - 1`. At the default
+// `slide-level: 2` that is level 1 -- the same level our own `section` role
+// uses -- and slydekit installs its divider rule (`show heading.where(level:
+// slide-level - 1): it => context if not state.get() {it}`, unconditionally
+// active, not just when hide-new-section-slide is used) inside its own
+// setup, *before* our document's `show heading.where(level: 1): ...` gets a
+// chance to run. Two show rules landing on the very same heading level like
+// that corrupts something slide-parser depends on to keep track of which
+// content belongs to which slide: confirmed with a trivial placeholder show
+// rule in place of render-transition, and independent of whether
+// hide-new-section-slide is also used -- the title slide's own text and the
+// first explicit `sk.slide(..)` following each heading silently lose their
+// body, while later slides in the same run render fine.
+//
+// This deck never relies on slide-level-driven automatic heading-to-slide
+// grouping -- every content slide is created explicitly with `sk.slide(..)`
+// below -- so nothing depends on `slide-level` matching a real heading
+// level. Set to 4 here, past both our heading levels (section: 1,
+// subsection: 2), `slide-level - 1` = 3 matches no heading in this
+// document, slydekit's own divider rule never fires, and the collision
+// disappears -- along with the need for hide-new-section-slide, since
+// there is now nothing automatic left to hide.
 #show: sk.slydekit.with(
   title: "Slydekit + Navigator",
   subtitle: "Two-level structural transitions",
   author: "David Hajage",
+  slide-level: 4,
 )
-
-// --- TRANSITION LOGIC ---
-//
-// slydekit's own theme reacts to `=` and `==` headings on its own (an
-// automatic "Outline" divider on level 1, an automatic content slide on
-// level 2). Both rules live inside the theme, applied when the document body
-// is shown, which puts them ahead of a plain `show heading: ...` declared
-// before `#show: sk.slydekit.with(...)`. So we first neutralize both levels
-// with `none`, then install navigator's transition — both declared here,
-// after the setup call, so they win over the theme's own rules.
-#show heading.where(level: 1): none
-#show heading.where(level: 2): none
 
 #show heading.where(level: 1): h => navigator.render-transition(
   h,
