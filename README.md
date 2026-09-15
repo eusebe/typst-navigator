@@ -14,7 +14,7 @@
 Import the package from the Typst Universe:
 
 ```typ
-#import "@preview/navigator:0.1.7": *
+#import "@preview/navigator:0.1.8": *
 ```
 
 ## Global Configuration
@@ -34,7 +34,7 @@ Navigator 0.1.4 introduces a centralized configuration state. Setting this once 
 
 ### Progressive Outline (`progressive-outline`)
 
-The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.7/docs/progressive-outline.pdf)).
+The `progressive-outline` function inserts a table of contents that reflects the document's progression. See [detailed documentation](docs/progressive-outline.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.8/docs/progressive-outline.pdf)).
 
 ```typ
 // Respects global config automatically
@@ -46,7 +46,7 @@ The `progressive-outline` function inserts a table of contents that reflects the
 
 ### Miniframes (`render-miniframes`)
 
-Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.7/docs/miniframes.pdf)).
+Generates a bar of dots representing the logical structure of a presentation. See [detailed documentation](docs/miniframes.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.8/docs/miniframes.pdf)).
 
 ```typ
 // Simplest usage (context required for auto-resolution)
@@ -55,7 +55,7 @@ Generates a bar of dots representing the logical structure of a presentation. Se
 
 ### Transition Engine (`render-transition`)
 
-Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.7/docs/transition.pdf)).
+Automates the creation of roadmap slides using a show rule. See [detailed documentation](docs/transition.typ) (⇒ [pdf](https://github.com/eusebe/typst-navigator/blob/0.1.8/docs/transition.pdf)).
 
 ```typ
 // Clean one-liner using global configuration
@@ -66,14 +66,14 @@ Automates the creation of roadmap slides using a show rule. See [detailed docume
 
 Integration examples are available in the `examples/` directory:
 
-- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/presentate_integration.pdf))
-- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/polylux_miniframes.pdf)), [Structural Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/polylux_progressive_ouline.pdf))
-- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/typslides_miniframes.pdf)), [Structural Transitions](examples/typslides_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/typslides_transitions.pdf))
-- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/diatypst_integration.pdf))
-- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/touying_transitions.pdf))
-- [**Mosaic**](https://typst.app/universe/package/mosaic): [Structural Transitions](examples/mosaic_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/mosaic_transitions.pdf))
-- [**Slydekit**](https://typst.app/universe/package/slydekit): [Structural Transitions](examples/slydekit_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/slydekit_transitions.pdf))
-- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.7/examples/markers.pdf))
+- [**Presentate**](https://typst.app/universe/package/presentate/): [Full Integration](examples/presentate_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/presentate_integration.pdf))
+- [**Polylux**](https://typst.app/universe/package/polylux): [Miniframes](examples/polylux_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/polylux_miniframes.pdf)), [Structural Transitions](examples/polylux_progressive_ouline.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/polylux_progressive_ouline.pdf))
+- [**Typslides**](https://typst.app/universe/package/typslides): [Miniframes](examples/typslides_miniframes.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/typslides_miniframes.pdf)), [Structural Transitions](examples/typslides_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/typslides_transitions.pdf))
+- [**Diatypst**](https://github.com/OrangeX4/diatypst): [Full Integration](examples/diatypst_integration.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/diatypst_integration.pdf))
+- [**Touying**](https://typst.app/universe/package/touying): [Structural Transitions with per-slide titles](examples/touying_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/touying_transitions.pdf))
+- [**Mosaic**](https://typst.app/universe/package/mosaic): [Structural Transitions](examples/mosaic_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/mosaic_transitions.pdf))
+- [**Slydekit**](https://typst.app/universe/package/slydekit): [Structural Transitions](examples/slydekit_transitions.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/slydekit_transitions.pdf))
+- **Standard Documents**: [Report with local roadmaps](examples/report.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/report.pdf)), [Customizable markers](examples/markers.typ) (⇒ [pdf results](https://github.com/eusebe/typst-navigator/blob/0.1.8/examples/markers.pdf))
 
 ## Acknowledgement 
 
