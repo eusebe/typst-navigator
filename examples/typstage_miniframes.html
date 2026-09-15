@@ -1433,10 +1433,25 @@ html[data-ts-schwarz="1"] #ts-clock{opacity:0}
         // box. So it is given the size in slide units and then zoomed, that
         // way it always sees the same area.
         //
-        // Scaled with `zoom`, not `transform: scale()`. A transform stretches
-        // the finished raster; the frame drew 400 pixels wide and would be
-        // blown up to 460, blurry. `zoom` acts before rasterising: the inner
-        // window stays 400 points but its pixel density rises with it.
+        // Scaled with `transform: scale()`, not `zoom`. `zoom` was the first
+        // choice, for a reason that has since been measured false twice.
+        //
+        // It is wrong in WebKit: `zoom` on an iframe scales the element box
+        // *and*, once more, the painting of the document inside it, so the
+        // content lands at skala * skala instead of skala. Measured in
+        // Safari 26.4 with 0.3: the guest filled 30 % of its frame instead
+        // of all of it, and the speaker view -- where the stage sits in a
+        // small tile and the scale is far below one -- showed every embedded
+        // document far too small. Chromium paints it once, as expected.
+        //
+        // And the blur that spoke for `zoom` is gone: a frame at 1.71, the
+        // scale of an ordinary full-screen stage, comes out as sharp under
+        // `transform` as under `zoom`. Engines re-rasterise a frame under a
+        // static transform.
+        //
+        // The price is the layout box: it now stands in slide points, not in
+        // screen pixels, so it overhangs its host wherever the stage scales
+        // down. The host clips it.
         var frame = el.querySelector("iframe");
         if (frame) {
           tastenBruecke(frame);
@@ -1451,8 +1466,15 @@ html[data-ts-schwarz="1"] #ts-clock{opacity:0}
             var ohneZoom = el.dataset.zoom === "0";
             frame.style.width = (ohneZoom ? w * skala : w) + "px";
             frame.style.height = (ohneZoom ? h * skala : h) + "px";
-            frame.style.transform = "";
-            frame.style.zoom = ohneZoom ? "" : skala;
+            frame.style.zoom = "";
+            frame.style.transformOrigin = ohneZoom ? "" : "0 0";
+            frame.style.transform = ohneZoom ? "" : "scale(" + skala + ")";
+            // The scale noted separately: converting a pointer into the frame
+            // needs it as a number, and out of `style.transform` it would
+            // have to be parsed back.
+            if (ohneZoom) delete frame.dataset.skala;
+            else frame.dataset.skala = skala;
+            el.style.overflow = "hidden";
             // An embedded app that draws has to be told, because its own
             // window need not have changed at all: where only the zoom moves,
             // the inner viewport keeps its size and no `resize` fires in
@@ -3686,11 +3708,12 @@ html[data-ts-schwarz="1"] #ts-clock{opacity:0}
     var doc = null, win = null;
     try { doc = f.contentDocument; win = f.contentWindow; } catch (x) {}
     if (!doc || !win) return;
-    // The frame is spanned in slide units and zoomed onto the stage. Its
+    // The frame is spanned in slide units and scaled onto the stage. Its
     // rectangle is therefore the size on screen, while inside it counts
-    // unzoomed. Dividing by the zoom is the whole conversion.
+    // unscaled. Dividing by the scale is the whole conversion. `style.zoom`
+    // stays in the chain for a frame that a previous version had sized.
     var fr = f.getBoundingClientRect();
-    var z = parseFloat(f.style.zoom) || 1;
+    var z = parseFloat(f.dataset.skala) || parseFloat(f.style.zoom) || 1;
     var ix = (cx - fr.left) / z, iy = (cy - fr.top) / z;
     var unten = null;
     try { unten = doc.elementFromPoint(ix, iy); } catch (y) {}

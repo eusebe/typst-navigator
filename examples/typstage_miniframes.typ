@@ -1,7 +1,4 @@
-// typstage is not on Typst Universe yet (checked out locally by the user),
-// hence the relative import instead of `@preview/typstage:x.y.z`. Compile
-// with `--root ..` so this path can reach the sibling checkout.
-#import "../../typstage-main/src/lib.typ" as tstg
+#import "@preview/typstage:0.1.1" as tstg
 #import "../lib.typ" as navigator
 
 // --- CONFIGURATION ---
